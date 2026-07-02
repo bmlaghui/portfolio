@@ -105,9 +105,21 @@ jobs:
       - name: Smoke production stack
         if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
         run: |
-          docker compose --env-file .env.prod -f docker-compose.prod.yml up -d db redis backend frontend
-          docker compose --env-file .env.prod -f docker-compose.prod.yml ps
+          docker compose --env-file .env.prod -f docker-compose.prod.yml up -d db redis
+          docker compose --env-file .env.prod -f docker-compose.prod.yml up -d backend || true
+          sleep 15
+          echo "=== Backend logs ==="
+          docker compose --env-file .env.prod -f docker-compose.prod.yml logs backend
+          docker compose --env-file .env.prod -f docker-compose.prod.yml up -d frontend
           curl --retry 30 --retry-delay 3 --retry-all-errors --fail http://localhost:8081/
+
+      - name: Dump logs on failure
+        if: failure()
+        run: |
+          echo "=== Backend logs ==="
+          docker compose --env-file .env.prod -f docker-compose.prod.yml logs backend || true
+          echo "=== DB logs ==="
+          docker compose --env-file .env.prod -f docker-compose.prod.yml logs db || true
 
       - name: Stop production smoke stack
         if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
