@@ -70,8 +70,7 @@ import { AnalyticsService } from '../../core/services/analytics.service';
           <p>{{ t.currentLang() === 'fr' ? 'Architecture, Angular et retours de terrain. Sans bruit.' : 'Architecture, Angular and field notes. No noise.' }}</p>
         </div>
         <form (ngSubmit)="subscribe()">
-          <label class="sr-only" for="newsletter-email">Email</label>
-          <input id="newsletter-email" type="email" name="email" [(ngModel)]="email" required placeholder="vous@email.com">
+          <input id="newsletter-email" type="email" name="email" [(ngModel)]="email" required placeholder="vous@email.com" aria-label="Email">
           <button type="submit" [disabled]="sending">{{ sending ? '…' : (t.currentLang() === 'fr' ? 'S’inscrire' : 'Subscribe') }} →</button>
           @if (newsletterMessage) { <small [class.error]="newsletterError">{{ newsletterMessage }}</small> }
         </form>
