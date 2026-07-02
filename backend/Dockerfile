@@ -27,7 +27,7 @@ CMD ["npm", "run", "start:dev"]
 # ─── Production stage ─────────────────────────────────────────────────────────
 FROM node:22-alpine AS production
 
-RUN apk add --no-cache openssl libc6-compat
+RUN apk add --no-cache openssl libc6-compat curl
 
 WORKDIR /app
 

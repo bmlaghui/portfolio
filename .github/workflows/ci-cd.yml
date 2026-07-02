@@ -175,5 +175,6 @@ jobs:
             "cd '$VPS_PORTFOLIO_APP_DIR' && \
              test -f .env.prod || (echo 'Missing .env.prod on VPS. Create it from .env.prod.example before deploying.' && exit 1) && \
              make prod-check && \
-             make prod && \
-             make prod-status"
+             make prod || (docker compose --env-file .env.prod -f docker-compose.prod.yml logs backend --tail=50 && exit 1)" && \
+          ssh -i ~/.ssh/portfolio_deploy "$VPS_USER@$VPS_HOST" \
+            "cd '$VPS_PORTFOLIO_APP_DIR' && make prod-status"
