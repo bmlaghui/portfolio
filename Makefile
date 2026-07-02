@@ -38,7 +38,7 @@ prod-build: prod-check
 	$(PROD_COMPOSE) build frontend backend
 
 prod: prod-check
-	$(PROD_COMPOSE) up -d --build
+	$(PROD_COMPOSE) up -d --build --force-recreate
 	@echo "Production: http://localhost:8081"
 
 prod-stop:
