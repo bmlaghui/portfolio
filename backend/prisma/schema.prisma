@@ -1,8 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -11,50 +9,162 @@ datasource db {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  email    String  @unique
-  password String
-  name     String?
+  id           Int      @id @default(autoincrement())
+  email        String   @unique
+  password     String
+  name         String?
+  role         Role     @default(ADMIN)
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
 }
 
 model Project {
-  id          Int      @id @default(autoincrement())
-  title       String
-  description String
-  imageUrl    String?
-  link        String?
-  github      String?
-  tags        String[]
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           Int      @id @default(autoincrement())
+  title        String
+  titleEn      String?
+  description  String
+  descriptionEn String?
+  imageUrl     String?
+  link         String?
+  github       String?
+  tags         String[]
+  featured     Boolean  @default(false)
+  published    Boolean  @default(true)
+  order        Int      @default(0)
+  accent       String?  @default("#c084fc")
+  slug         String?  @unique
+  challenge    String?
+  challengeEn  String?
+  solution     String?
+  solutionEn   String?
+  results      String[] @default([])
+  resultsEn    String[] @default([])
+  role         String?
+  duration     String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Experience {
-  id          Int      @id @default(autoincrement())
-  company     String
-  position    String
+  id            Int       @id @default(autoincrement())
+  company       String
+  position      String
+  positionEn    String?
+  startDate     DateTime
+  endDate       DateTime?
+  current       Boolean   @default(false)
+  description   String
+  descriptionEn String?
+  skills        String[]
+  order         Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Education {
+  id          Int       @id @default(autoincrement())
+  school      String
+  degree      String
+  field       String
   startDate   DateTime
   endDate     DateTime?
-  current     Boolean  @default(false)
-  description String
-  order       Int      @default(0)
+  description String?
+  order       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model BlogPost {
+  id            Int      @id @default(autoincrement())
+  title         String
+  titleEn       String?
+  slug          String   @unique
+  summary       String
+  summaryEn     String?
+  content       String
+  contentEn     String?
+  imageUrl      String?
+  published     Boolean  @default(false)
+  featured      Boolean  @default(false)
+  readTime      Int?     // minutes
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  tags          String[]
 }
 
 model Skill {
   id       Int    @id @default(autoincrement())
   name     String
-  category String // e.g., "Frontend", "Backend", "Tools"
+  category String
   icon     String?
   level    Int    @default(5) // 1-5
+  order    Int    @default(0)
 }
 
 model Profile {
-  id        Int     @id @default(autoincrement())
+  id         Int     @id @default(autoincrement())
+  name       String
+  title      String
+  titleEn    String?
+  bio        String
+  bioEn      String?
+  avatarUrl  String?
+  email      String?
+  phone      String?
+  location   String?
+  available  Boolean @default(true)
+  socials    Json?   // { github, linkedin, twitter, website }
+  cvUrl      String?
+  updatedAt  DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
   name      String
-  title     String
-  bio       String
+  email     String
+  subject   String?
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Testimonial {
+  id        Int      @id @default(autoincrement())
+  name      String
+  role      String
+  company   String?
+  quote     String
+  quoteEn   String?
   avatarUrl String?
-  email     String?
-  socials   Json?   // { github: string, linkedin: string, etc }
+  linkedin  String?
+  published Boolean  @default(true)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model NewsletterSubscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  language String   @default("fr")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model AnalyticsEvent {
+  id         Int      @id @default(autoincrement())
+  type       String
+  resource   String?
+  resourceId String?
+  path       String?
+  createdAt  DateTime @default(now())
+
+  @@index([type])
+  @@index([createdAt])
 }

@@ -1,0 +1,167 @@
+name: Portfolio Production Pipeline
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+
+concurrency:
+  group: portfolio-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: 22
+
+jobs:
+  backend:
+    name: Backend | typecheck, build, unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        run: npm ci
+        working-directory: backend
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+        working-directory: backend
+
+      - name: Typecheck backend
+        run: npx tsc -p tsconfig.json --noEmit --pretty false
+        working-directory: backend
+
+      - name: Build backend
+        run: npm run build
+        working-directory: backend
+
+      - name: Run backend unit tests
+        run: npm test -- --runInBand
+        working-directory: backend
+
+  frontend:
+    name: Frontend | production build
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        run: npm ci
+        working-directory: frontend
+
+      - name: Build frontend for production
+        run: npm run build -- --configuration production
+        working-directory: frontend
+
+  production-compose:
+    name: Production Docker | config, build, smoke
+    needs: [backend, frontend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create CI production env file
+        run: |
+          cat > .env.prod <<'EOF'
+          FRONTEND_PORT=8081
+          DB_USER=ci_user
+          DB_PASSWORD=ci_password_for_compose
+          DB_NAME=portfolio_ci
+          JWT_SECRET=ci_jwt_secret_for_pipeline_only_change_in_real_prod
+          JWT_REFRESH_SECRET=ci_refresh_secret_for_pipeline_only
+          EOF
+
+      - name: Validate production compose file
+        run: docker compose --env-file .env.prod -f docker-compose.prod.yml config
+
+      - name: Build production images
+        run: docker compose --env-file .env.prod -f docker-compose.prod.yml build frontend backend
+
+      - name: Smoke production stack
+        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
+        run: |
+          docker compose --env-file .env.prod -f docker-compose.prod.yml up -d db redis backend frontend
+          docker compose --env-file .env.prod -f docker-compose.prod.yml ps
+          curl --retry 30 --retry-delay 3 --retry-all-errors --fail http://localhost:8081/
+
+      - name: Stop production smoke stack
+        if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
+        run: docker compose --env-file .env.prod -f docker-compose.prod.yml down --volumes --remove-orphans
+
+  deploy:
+    name: Deploy | IONOS VPS
+    needs: production-compose
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master') && github.event_name != 'pull_request'
+
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_PORTFOLIO_APP_DIR: ${{ secrets.VPS_PORTFOLIO_APP_DIR }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH access
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/portfolio_deploy
+          chmod 600 ~/.ssh/portfolio_deploy
+          ssh-keyscan -H "$VPS_HOST" >> ~/.ssh/known_hosts
+
+      - name: Prepare application directory
+        run: |
+          ssh -i ~/.ssh/portfolio_deploy "$VPS_USER@$VPS_HOST" \
+            "mkdir -p '$VPS_PORTFOLIO_APP_DIR'"
+
+      - name: Upload release to VPS
+        run: |
+          tar \
+            --exclude='./.git' \
+            --exclude='./.env' \
+            --exclude='./.env.prod' \
+            --exclude='./backend/node_modules' \
+            --exclude='./backend/dist' \
+            --exclude='./backend/coverage' \
+            --exclude='./frontend/node_modules' \
+            --exclude='./frontend/dist' \
+            --exclude='./frontend/.angular' \
+            -czf - . | ssh -i ~/.ssh/portfolio_deploy "$VPS_USER@$VPS_HOST" \
+            "tar -xzf - -C '$VPS_PORTFOLIO_APP_DIR'"
+
+      - name: Start production stack
+        run: |
+          ssh -i ~/.ssh/portfolio_deploy "$VPS_USER@$VPS_HOST" \
+            "cd '$VPS_PORTFOLIO_APP_DIR' && \
+             test -f .env.prod || (echo 'Missing .env.prod on VPS. Create it from .env.prod.example before deploying.' && exit 1) && \
+             make prod-check && \
+             make prod && \
+             make prod-status"

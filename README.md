@@ -1,6 +1,6 @@
 # Fullstack Portfolio (Dockerized)
 
-A modern portfolio website built with Angular 19, NestJS, and PostgreSQL.
+A modern portfolio website built with Angular 21, NestJS, and PostgreSQL.
 
 ## Features
 - **Ultra-Modern UI/UX**: Custom design system with glassmorphism and animations.
@@ -18,8 +18,9 @@ A modern portfolio website built with Angular 19, NestJS, and PostgreSQL.
 ```bash
 docker-compose up --build
 ```
-- Frontend: [http://localhost:4200](http://localhost:4200)
+- Frontend: [http://localhost:4000](http://localhost:4000)
 - Backend API: [http://localhost:3000](http://localhost:3000)
+- Admin: [http://localhost:4000/admin](http://localhost:4000/admin)
 
 ### 2. Production Environment
 ```bash
@@ -32,6 +33,14 @@ To sync your database schema:
 cd backend
 npx prisma migrate dev --name init
 ```
+
+To load the portfolio demo content:
+```bash
+docker compose exec backend npx prisma db seed
+```
+
+The local seed creates `admin@portfolio.com` with password `Admin123!`. Change
+these credentials and the JWT secrets before deploying publicly.
 
 ## Structure
 - `/frontend`: Angular application
