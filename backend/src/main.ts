@@ -11,9 +11,17 @@ async function bootstrap() {
 
   // CORS for frontend
   app.enableCors({
-    origin: ['http://localhost:4000', 'http://portfolio-frontend:4000'],
+    origin: [
+      'http://localhost:4000',
+      'http://portfolio-frontend:4000',
+      'https://www.mlaghuibrahim.fr',
+      'https://mlaghuibrahim.fr',
+    ],
     credentials: true,
   });
+
+  // Global API prefix
+  app.setGlobalPrefix('api');
 
   // Seed default admin user on startup
   const authService = app.get(AuthService);
