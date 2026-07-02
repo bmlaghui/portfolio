@@ -92,6 +92,7 @@ jobs:
           DB_USER=ci_user
           DB_PASSWORD=ci_password_for_compose
           DB_NAME=portfolio_ci
+          DATABASE_URL=postgresql://ci_user:ci_password_for_compose@db:5432/portfolio_ci?schema=public
           JWT_SECRET=ci_jwt_secret_for_pipeline_only_change_in_real_prod
           JWT_REFRESH_SECRET=ci_refresh_secret_for_pipeline_only
           EOF
