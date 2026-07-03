@@ -45,6 +45,11 @@ import { SeoService } from '../../core/services/seo.service';
         </div>
 
         <div class="reading-body reveal" style="animation-delay: 0.3s" [innerHTML]="renderedContent()"></div>
+        
+        <!-- Block-based tags display -->
+        <div class="post-tags" *ngIf="post()?.tags?.length">
+          <span *ngFor="let tag of post()?.tags" class="post-tag">{{ tag }}</span>
+        </div>
 
         <footer class="reading-footer reveal">
            <div class="glass-card share-box">
@@ -126,6 +131,22 @@ import { SeoService } from '../../core/services/seo.service';
       padding: 2rem; margin: 3rem 0; border: 1px solid var(--glass-border);
       border-radius: 16px; background: rgba(0,0,0,0.5); overflow-x: auto;
     }
+    /* Block styles */
+    :host ::ng-deep .block-paragraph { font-size: 1.15rem; line-height: 1.9; color: var(--text-muted); margin-bottom: 1.8rem; }
+    :host ::ng-deep .block-paragraph :is(h2,h3) { color: var(--text); margin: 2.5rem 0 1rem; font-family: var(--font-title); }
+    :host ::ng-deep .block-paragraph strong { color: var(--text); }
+    :host ::ng-deep .block-code { background: #070710; border: 1px solid var(--glass-border); border-radius: 16px; margin: 3rem 0; overflow: hidden; }
+    :host ::ng-deep .block-code .code-head { background: rgba(255,255,255,0.03); padding: 0.8rem 1.5rem; border-bottom: 1px solid var(--glass-border); font-size: 0.65rem; font-weight: 900; color: var(--secondary); letter-spacing: 2px; font-family: 'Fira Code', monospace; }
+    :host ::ng-deep .block-code pre { padding: 2rem; margin: 0; overflow-x: auto; }
+    :host ::ng-deep .block-code code { font-family: 'Fira Code', monospace; font-size: 0.95rem; color: #a5b4fc; line-height: 1.7; }
+    :host ::ng-deep .block-image { margin: 3rem 0; }
+    :host ::ng-deep .block-image img { width: 100%; border-radius: 12px; border: 1px solid var(--glass-border); }
+    :host ::ng-deep .block-image figcaption { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem; font-style: italic; }
+    :host ::ng-deep .block-video { margin: 3rem 0; }
+    :host ::ng-deep .block-video :is(iframe, video) { width: 100%; aspect-ratio: 16/9; border-radius: 12px; border: 1px solid var(--glass-border); }
+    :host ::ng-deep .block-quote { border-left: 3px solid var(--primary); padding: 1.5rem 2rem; margin: 3rem 0; background: rgba(192,132,252,0.05); border-radius: 0 12px 12px 0; }
+    :host ::ng-deep .block-quote p { font-size: 1.25rem; color: #e2e8f0; font-style: italic; line-height: 1.7; margin: 0 0 0.5rem; }
+    :host ::ng-deep .block-quote cite { font-size: 0.8rem; color: var(--primary); font-style: normal; font-weight: 700; }
     
     .quote-card { padding: 4rem; margin: 5rem 0; text-align: center; border-color: var(--primary); background: rgba(192,132,252,0.05); }
     .quote-card p { font-size: 2rem; font-family: var(--font-title); color: white; margin: 0; }
@@ -134,8 +155,9 @@ import { SeoService } from '../../core/services/seo.service';
     .code-head { background: rgba(255,255,255,0.03); padding: 1rem 2rem; border-bottom: 1px solid var(--glass-border); font-size: 0.7rem; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
     pre { padding: 2.5rem; margin: 0; font-family: 'Fira Code', monospace; font-size: 1rem; color: #a5b4fc; overflow-x: auto; }
 
-    /* Footer */
     .reading-footer { margin-top: 8rem; }
+    .post-tags { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 3rem 0; }
+    .post-tag { font-size: 0.7rem; font-weight: 700; color: var(--primary); border: 1px solid rgba(192,132,252,0.3); border-radius: 20px; padding: 0.35rem 0.9rem; }
     .share-box { padding: 2.5rem 3rem; display: flex; justify-content: space-between; align-items: center; border-radius: 16px; }
     .share-box span { font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; }
     .discussion-action { display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; }
@@ -172,6 +194,13 @@ export class BlogDetailComponent implements OnInit {
   renderedContent = computed<SafeHtml>(() => {
     const post = this.post();
     if (!post) return '';
+    // Use blocks if available
+    if (post.blocks && post.blocks.length > 0) {
+      const isEn = this.t.currentLang() === 'en';
+      const blocks = isEn ? post.blocks.filter((b: any) => b.id?.startsWith('en_')) : post.blocks.filter((b: any) => !b.id?.startsWith('en_'));
+      const html = blocks.map((b: any) => this.renderBlock(b)).join('');
+      return this.sanitizer.bypassSecurityTrustHtml(html);
+    }
     const markdown = this.t.currentLang() === 'en' && post.contentEn ? post.contentEn : post.content;
     return this.sanitizer.bypassSecurityTrustHtml(this.renderMarkdown(markdown));
   });
@@ -209,6 +238,40 @@ export class BlogDetailComponent implements OnInit {
   linkedinShareUrl() {
     if (typeof window === 'undefined') return 'https://www.linkedin.com/';
     return `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}`;
+  }
+
+  private renderBlock(b: any): string {
+    switch (b.type) {
+      case 'paragraph':
+        return `<div class="block-paragraph">${b.content ?? ''}</div>`;
+      case 'code':
+        const lang = b.language ?? 'code';
+        const escaped = (b.content ?? '').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return `<div class="block-code"><div class="code-head">${lang.toUpperCase()}</div><pre><code>${escaped}</code></pre></div>`;
+      case 'image':
+        const caption = b.caption ? `<figcaption>${b.caption}</figcaption>` : '';
+        return `<figure class="block-image"><img src="${b.url}" alt="${b.alt || ''}" loading="lazy">${caption}</figure>`;
+      case 'video':
+        const embedUrl = this.makeEmbedUrl(b.url ?? '');
+        if (!embedUrl) return '';
+        const isIframe = embedUrl.includes('youtube') || embedUrl.includes('vimeo');
+        return isIframe
+          ? `<div class="block-video"><iframe src="${embedUrl}" frameborder="0" allowfullscreen loading="lazy"></iframe></div>`
+          : `<div class="block-video"><video src="${b.url}" controls></video></div>`;
+      case 'quote':
+        const source = b.caption ? `<cite>— ${b.caption}</cite>` : '';
+        return `<blockquote class="block-quote"><p>${b.content ?? ''}</p>${source}</blockquote>`;
+      default:
+        return '';
+    }
+  }
+
+  private makeEmbedUrl(url: string): string {
+    if (!url) return '';
+    if (url.includes('youtube.com/watch')) return url.replace('watch?v=', 'embed/');
+    if (url.includes('youtu.be/')) return 'https://www.youtube.com/embed/' + url.split('youtu.be/')[1];
+    if (url.includes('vimeo.com/')) return 'https://player.vimeo.com/video/' + url.split('vimeo.com/')[1];
+    return url;
   }
 
   private renderMarkdown(markdown: string): string {

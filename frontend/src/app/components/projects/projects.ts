@@ -81,7 +81,7 @@ import { RouterModule } from '@angular/router';
 
             <!-- Content -->
             <h3 class="p-title">{{ projectTitle(p) }}</h3>
-            <p class="p-desc">{{ projectDescription(p) }}</p>
+            <div class="p-desc" [innerHTML]="projectDescription(p)"></div>
 
             <!-- Tags -->
             <div class="p-tags">
@@ -90,7 +90,10 @@ import { RouterModule } from '@angular/router';
 
             <!-- Bottom CTA -->
             <a [routerLink]="['/projects', p.slug || p.id]" class="p-cta">
-              {{ t.currentLang() === 'fr' ? 'Voir l’étude de cas' : 'View case study' }} <span class="arr">→</span>
+              <span class="p-cta-text">{{ t.currentLang() === 'fr' ? 'Étude de cas' : 'Case study' }}</span>
+              <span class="p-cta-arr">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </span>
             </a>
           </article>
           <p class="empty-state" *ngIf="!loading() && filteredProjects().length === 0">
@@ -296,14 +299,23 @@ import { RouterModule } from '@angular/router';
     }
     .p-desc {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: 0.85rem;
       line-height: 1.6;
       flex: 1;
+      max-height: 90px;
+      overflow: hidden;
+      mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to bottom, black 50%, transparent 100%);
       margin-bottom: 1.5rem;
       padding: 0 2rem;
       position: relative;
       z-index: 2;
     }
+    .p-desc p { margin: 0 0 0.4rem; }
+    .p-desc ul, .p-desc ol { margin: 0.25rem 0 0.4rem 1.2rem; padding: 0; }
+    .p-desc li { margin-bottom: 0.2rem; }
+    .p-desc strong, .p-desc b { color: var(--text); font-weight: 700; }
+    .p-desc h1, .p-desc h2, .p-desc h3 { font-size: 0.9rem; font-weight: 700; color: var(--text); margin: 0 0 0.3rem; }
     .p-tags {
       display: flex;
       gap: 0.5rem;
@@ -323,23 +335,46 @@ import { RouterModule } from '@angular/router';
       border-radius: 50px;
     }
     .p-cta {
-      display: inline-flex;
+      display: flex;
       align-items: center;
-      gap: 0.6rem;
-      font-size: 0.7rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      color: var(--text-muted);
+      justify-content: space-between;
       text-decoration: none;
-      transition: color 0.3s;
-      padding: 0 2rem 2rem;
+      margin: 0 2rem 2rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--glass-border);
+      background: rgba(255,255,255,0.02);
+      transition: border-color 0.3s, background 0.3s;
       position: relative;
       z-index: 2;
     }
-    .p-cta:hover { color: var(--primary); }
-    .p-cta.muted { cursor: default; opacity: 0.55; }
-    .arr { display: inline-block; transition: transform 0.3s; }
-    .p-cta:hover .arr { transform: translateX(5px); }
+    .p-cta:hover {
+      border-color: var(--accent, var(--primary));
+      background: rgba(192,132,252,0.04);
+    }
+    .p-cta-text {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      transition: color 0.3s;
+    }
+    .p-cta:hover .p-cta-text { color: var(--accent, var(--primary)); }
+    .p-cta-arr {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--glass-border);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--text-muted);
+      transition: background 0.3s, color 0.3s, transform 0.3s;
+      flex-shrink: 0;
+    }
+    .p-cta:hover .p-cta-arr {
+      background: var(--accent, var(--primary));
+      color: #000;
+      transform: translateX(3px);
+    }
 
     /* ─── Responsive ─── */
     @media (max-width: 900px) {

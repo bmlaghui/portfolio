@@ -47,6 +47,7 @@ model Project {
   resultsEn    String[] @default([])
   role         String?
   duration     String?
+  gallery      String[] @default([])
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 }
@@ -62,6 +63,8 @@ model Experience {
   description   String
   descriptionEn String?
   skills        String[]
+  logoUrl       String?
+  linkedinUrl   String?
   order         Int       @default(0)
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -74,10 +77,11 @@ model Education {
   field       String
   startDate   DateTime
   endDate     DateTime?
-  description String?
-  order       Int       @default(0)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  description    String?
+  certificateUrl String?
+  order          Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 }
 
 model BlogPost {
@@ -93,6 +97,7 @@ model BlogPost {
   published     Boolean  @default(false)
   featured      Boolean  @default(false)
   readTime      Int?     // minutes
+  blocks        Json?    // block-based content
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   tags          String[]

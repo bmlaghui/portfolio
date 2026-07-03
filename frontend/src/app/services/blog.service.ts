@@ -17,6 +17,7 @@ export interface BlogPost {
   featured: boolean;
   readTime?: number;
   published: boolean;
+  blocks?: any[];
   createdAt: string;
   updatedAt: string;
 }

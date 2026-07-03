@@ -84,8 +84,8 @@ export class BlogApiService extends AdminApiService {
 
 @Injectable({ providedIn: 'root' })
 export class EducationApiService extends AdminApiService {
-  getAll(options?: QueryOptions): Observable<PaginatedResponse<Education>> {
-    return this.http.get<PaginatedResponse<Education>>(`${this.baseUrl}/education`, { params: this.getParams(options) });
+  getAll(options?: QueryOptions): Observable<Education[]> {
+    return this.http.get<Education[]>(`${this.baseUrl}/education`, { params: this.getParams(options) });
   }
   create(data: Education): Observable<Education> { return this.http.post<Education>(`${this.baseUrl}/education`, data); }
   update(id: number, data: Partial<Education>): Observable<Education> { return this.http.patch<Education>(`${this.baseUrl}/education/${id}`, data); }

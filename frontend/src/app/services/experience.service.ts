@@ -15,6 +15,8 @@ export interface Experience {
   description: string;
   descriptionEn?: string;
   skills: string[];
+  logoUrl?: string;
+  linkedinUrl?: string;
   order: number;
 }
 

@@ -198,11 +198,16 @@ import { AnalyticsService } from '../../core/services/analytics.service';
     @media (max-width: 1000px) {
       .footer-grid { grid-template-columns: 1fr 1fr; gap: 3rem; }
       .brand-col { grid-column: 1 / -1; }
+      .newsletter { grid-template-columns: 1fr; gap: 1.5rem; }
+      .newsletter h3 { font-size: 1.3rem; }
     }
     @media (max-width: 600px) {
       .footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
       .footer-bottom { flex-direction: column; gap: 1rem; text-align: center; }
-      .newsletter{grid-template-columns:1fr;gap:1.5rem}.newsletter form{grid-template-columns:1fr}
+      .newsletter { grid-template-columns: 1fr; gap: 1.25rem; }
+      .newsletter h3 { font-size: 1.15rem; }
+      .newsletter form { grid-template-columns: 1fr; }
+      .newsletter button { width: 100%; }
     }
   `]
 })

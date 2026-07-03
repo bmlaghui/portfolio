@@ -306,34 +306,32 @@ async function main() {
           slug: 'pourquoi-nestjs-backend',
           summary: 'NestJS apporte une structure solide et opinionée à Node.js. Découvrez pourquoi c\'est mon framework backend de prédilection.',
           summaryEn: 'NestJS brings a solid and opinionated structure to Node.js. Find out why it\'s my go-to backend framework.',
-          content: `# Pourquoi j'ai choisi NestJS
+          content: `NestJS est un framework Node.js qui s'inspire fortement d'Angular dans son architecture. Il utilise TypeScript par défaut et propose une structure modulaire qui facilite la maintenance des projets.`,
+          contentEn: `NestJS is a Node.js framework heavily inspired by Angular. It uses TypeScript by default and offers a modular structure.`,
+          blocks: [
+            { id: 'b1', type: 'paragraph', content: `<h2>Pourquoi NestJS ?</h2><p>NestJS est un framework Node.js qui s\'inspire d\'Angular dans son architecture. Il utilise TypeScript par défaut et propose une structure modulaire qui facilite la maintenance des projets à grande échelle.</p>` },
+            { id: 'b2', type: 'paragraph', content: `<h3>Architecture modulaire</h3><p>Chaque fonctionnalité est encapsulée dans un <strong>module NestJS</strong>. Cela permet d\'isoler les responsabilités et de tester chaque partie indépendamment.</p>` },
+            { id: 'b3', type: 'code', language: 'typescript', content: `@Module({
+  imports: [PrismaModule, JwtModule.registerAsync({...})],
+  controllers: [AuthController],
+  providers: [AuthService, JwtStrategy],
+  exports: [AuthService],
+})
+export class AuthModule {}` },
+            { id: 'b4', type: 'paragraph', content: `<h3>Injection de dépendances</h3><p>Le système d\'IoC de NestJS rend le code testable et les dépendances explicites. Chaque service déclare ses dépendances via le constructeur.</p>` },
+            { id: 'b5', type: 'code', language: 'typescript', content: `@Injectable()
+export class ProjectsService {
+  constructor(private readonly prisma: PrismaService) {}
 
-NestJS est un framework Node.js qui s'inspire fortement d'Angular dans son architecture. Il utilise TypeScript par défaut et propose une structure modulaire qui facilite la maintenance des projets.
-
-## Les avantages
-
-- **Architecture modulaire** : chaque fonctionnalité est encapsulée dans un module
-- **Injection de dépendances** : comme Angular, NestJS utilise un système d'IoC puissant
-- **Décorateurs TypeScript** : le code est lisible et expressif
-- **Écosystème riche** : intégrations officielles avec Prisma, Redis, JWT, etc.
-
-## Conclusion
-
-Pour des APIs robustes et maintenables, NestJS est un excellent choix.`,
-          contentEn: `# Why I chose NestJS
-
-NestJS is a Node.js framework heavily inspired by Angular in its architecture. It uses TypeScript by default and offers a modular structure that makes project maintenance easier.
-
-## Advantages
-
-- **Modular architecture**: each feature is encapsulated in a module
-- **Dependency injection**: like Angular, NestJS uses a powerful IoC system
-- **TypeScript decorators**: the code is readable and expressive
-- **Rich ecosystem**: official integrations with Prisma, Redis, JWT, etc.
-
-## Conclusion
-
-For robust and maintainable APIs, NestJS is an excellent choice.`,
+  async findAll(): Promise<Project[]> {
+    return this.prisma.project.findMany({
+      where: { published: true },
+      orderBy: { order: 'asc' },
+    });
+  }
+}` },
+            { id: 'b6', type: 'quote', content: 'NestJS vous force à écrire du code structuré dès le départ, ce qui vous remercie à chaque nouvelle fonctionnalité.', caption: `Retour d\'expérience personnel` },
+          ],
           tags: ['NestJS', 'Node.js', 'TypeScript', 'Backend'],
           published: true,
           featured: true,
@@ -346,38 +344,40 @@ For robust and maintainable APIs, NestJS is an excellent choice.`,
           slug: 'angular-signals-etat',
           summary: 'Les Signals d\'Angular 17+ révolutionnent la gestion de l\'état réactif. Un tour d\'horizon de cette nouvelle primitive.',
           summaryEn: 'Angular 17+ Signals revolutionize reactive state management. An overview of this new primitive.',
-          content: `# Les Signals dans Angular
+          content: `Les Signals sont la nouvelle primitive réactive d'Angular, synchrones et simples à composer.`,
+          contentEn: `Signals are Angular's new reactive primitive, synchronous and easy to compose.`,
+          blocks: [
+            { id: 'b1', type: 'paragraph', content: `<h2>Les Signals dans Angular 17+</h2><p>Angular 17 a introduit les <strong>Signals</strong> comme nouvelle primitive réactive. Contrairement à RxJS, les Signals sont <strong>synchrones</strong> et plus simples à utiliser pour la gestion d\'état local d\'un composant.</p>` },
+            { id: 'b2', type: 'code', language: 'typescript', content: `import { signal, computed, effect } from '@angular/core';
 
-Angular 17 a introduit les Signals comme nouvelle primitive réactive. Contrairement à RxJS, les Signals sont synchrones et plus simples à utiliser pour la gestion d'état local.
-
-## Exemple
-
-\`\`\`typescript
+// Signal de base
 const count = signal(0);
+
+// Signal calculé
 const doubled = computed(() => count() * 2);
 
-count.set(5); // doubled() === 10
-\`\`\`
+// Effet (s'exécute quand les deps changent)
+effect(() => console.log('count =', count()));
 
-## Quand les utiliser ?
+// Mutation
+count.set(5);         // doubled() === 10
+count.update(v => v + 1); // count() === 6` },
+            { id: 'b3', type: 'paragraph', content: `<h3>Signals vs RxJS : quand utiliser quoi ?</h3><ul><li><strong>Signals</strong> : état local d\'un composant, valeurs dérivées synchrones, bindings dans le template</li><li><strong>RxJS</strong> : flux asynchrones (HTTP, WebSocket), opérations complexes (debounce, merge, switchMap)</li></ul>` },
+            { id: 'b4', type: 'code', language: 'typescript', content: `@Component({
+  template: \`
+    <h1>{{ title() }}</h1>
+    <p>Count: {{ count() }}</p>
+    <button (click)="increment()">+</button>
+  \`,
+})
+export class CounterComponent {
+  count = signal(0);
+  title = computed(() => \`Counter: \${this.count()}\`);
 
-Les Signals sont idéaux pour l'état local d'un composant. Pour les flux asynchrones complexes, RxJS reste la meilleure option.`,
-          contentEn: `# Signals in Angular
-
-Angular 17 introduced Signals as a new reactive primitive. Unlike RxJS, Signals are synchronous and simpler to use for local state management.
-
-## Example
-
-\`\`\`typescript
-const count = signal(0);
-const doubled = computed(() => count() * 2);
-
-count.set(5); // doubled() === 10
-\`\`\`
-
-## When to use them?
-
-Signals are ideal for component-local state. For complex async streams, RxJS remains the best option.`,
+  increment() { this.count.update(v => v + 1); }
+}` },
+            { id: 'b5', type: 'quote', content: `Avec les Signals, Angular évolue vers une réactivité fine-grained sans Zone.js. C\'est l\'avenir du framework.', caption: 'Angular Blog, 2024` },
+          ],
           tags: ['Angular', 'Signals', 'Frontend', 'TypeScript'],
           published: true,
           featured: false,
@@ -388,44 +388,28 @@ Signals are ideal for component-local state. For complex async streams, RxJS rem
           title: 'De développeur Full-Stack à Tech Lead',
           titleEn: 'From Full-Stack Developer to Technical Lead',
           slug: 'developpeur-full-stack-tech-lead',
-          summary: 'Passer Tech Lead ne consiste pas à écrire plus de code : il s’agit surtout de créer les conditions pour que toute l’équipe livre mieux.',
+          summary: "Passer Tech Lead ne consiste pas à écrire plus de code : il s'agit surtout de créer les conditions pour que toute l'équipe livre mieux.",
           summaryEn: 'Becoming a Technical Lead is not about writing more code; it is about creating the conditions for the whole team to deliver better.',
-          content: `# De développeur Full-Stack à Tech Lead
+          content: "Le passage au rôle de Tech Lead change la définition d'une journée réussie. Architecture, livraison, collectif.",
+          contentEn: 'Moving to Technical Lead changes the definition of a successful day. Architecture, delivery, team growth.',
+          blocks: [
+            { id: 'b1', type: 'paragraph', content: "<h2>De développeur Full-Stack à Tech Lead</h2><p>Le passage au rôle de Tech Lead change la définition d'une journée réussie. La qualité de votre propre code reste importante, mais elle ne suffit plus : vous devenez <strong>responsable de la qualité collective</strong>.</p>" },
+            { id: 'b2', type: 'paragraph', content: "<h3>Donner un cap technique</h3><p>Une architecture utile doit être comprise par l'équipe. Je privilégie des <strong>décisions courtes, documentées et réversibles</strong> lorsque c'est possible. L'Architecture Decision Record (ADR) est un outil simple et puissant pour cela.</p>" },
+            { id: 'b3', type: 'code', language: 'markdown', content: `# ADR-001 : Choix de NestJS pour le backend
 
-Le passage au rôle de Tech Lead change la définition d'une journée réussie. La qualité de votre propre code reste importante, mais elle ne suffit plus.
+## Contexte
+Nous devons choisir un framework Node.js pour l'API REST du projet.
 
-## Donner un cap technique
+## Décision
+Utiliser NestJS pour sa structure modulaire et son écosystème TypeScript mature.
 
-Une architecture utile doit être comprise par l'équipe. Je privilégie des décisions courtes, documentées et réversibles lorsque c'est possible.
-
-## Fluidifier la livraison
-
-- Clarifier les responsabilités entre modules
-- Automatiser les contrôles dans la CI
-- Réduire la taille des changements
-- Partager le contexte pendant les revues
-
-## Faire grandir le collectif
-
-Le meilleur indicateur n'est pas le nombre de tickets que le Tech Lead termine, mais l'autonomie et la confiance que l'équipe gagne.`,
-          contentEn: `# From Full-Stack Developer to Technical Lead
-
-Moving into a Technical Lead role changes the definition of a successful day. The quality of your own code still matters, but it is no longer enough.
-
-## Set a technical direction
-
-A useful architecture must be understood by the team. I favor short, documented decisions that remain reversible whenever possible.
-
-## Improve delivery flow
-
-- Clarify responsibilities between modules
-- Automate checks in CI
-- Reduce change size
-- Share context during reviews
-
-## Grow the team
-
-The best indicator is not how many tickets the Technical Lead completes, but how much autonomy and confidence the team gains.`,
+## Conséquences
+- ✅ Structure claire, decorateurs, injection de dépendances
+- ✅ Tests unitaires et e2e bien supportés
+- ⚠️ Courbe d'apprentissage pour les devs junior` },
+            { id: 'b4', type: 'paragraph', content: "<h3>Fluidifier la livraison</h3><p>Un bon Tech Lead mesure son impact à la <strong>vitesse de livraison de l'équipe</strong>, pas à son propre throughput. Quelques leviers clés :</p><ul><li>Clarifier les responsabilités entre modules</li><li>Automatiser les contrôles dans la CI</li><li>Réduire la taille des PR (200 lignes max idéalement)</li><li>Partager le contexte pendant les revues</li></ul>" },
+            { id: 'b5', type: 'quote', content: "Le meilleur indicateur n'est pas le nombre de tickets que le Tech Lead termine, mais l'autonomie et la confiance que l'équipe gagne.", caption: "Mon approche du leadership technique" },
+          ],
           tags: ['Leadership', 'Architecture', 'Engineering'],
           published: true,
           featured: true,
@@ -433,39 +417,45 @@ The best indicator is not how many tickets the Technical Lead completes, but how
           createdAt: new Date('2026-06-18T09:00:00Z'),
         },
         {
-          title: 'Accélérer Angular sans complexifier l’application',
+          title: "Accélérer Angular sans complexifier l'application",
           titleEn: 'Making Angular faster without making it complex',
           slug: 'performance-angular-sans-complexite',
           summary: 'Une méthode pragmatique pour améliorer les performances Angular avec les Signals, le lazy loading et une mesure utile.',
           summaryEn: 'A pragmatic approach to Angular performance using Signals, lazy loading, and meaningful measurements.',
-          content: `# Accélérer Angular sans complexifier l'application
+          content: "Performance Angular : Signals, lazy loading, OnPush, images optimisées, mesure avec DevTools.",
+          contentEn: 'Angular performance: Signals, lazy loading, OnPush, optimized images, DevTools measurement.',
+          blocks: [
+            { id: 'b1', type: 'paragraph', content: "<h2>Accélérer Angular sans complexifier</h2><p>La performance commence par une <strong>mesure</strong>, pas par une optimisation prématurée. Angular DevTools et Lighthouse sont vos premiers outils.</p>" },
+            { id: 'b2', type: 'paragraph', content: '<h3>OnPush + Signals = moins de re-renders</h3><p>Avec <code>ChangeDetectionStrategy.OnPush</code> et les Signals, Angular ne re-rend que les composants dont les données ont changé. Résultat : bien moins de travail pour le moteur de rendu.</p>' },
+            { id: 'b3', type: 'code', language: 'typescript', content: `@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: \`
+    @for (item of items(); track item.id) {
+      <app-item [data]="item" />
+    }
+  \`,
+})
+export class ListComponent {
+  items = signal<Item[]>([]);
 
-La performance commence par une mesure, pas par une optimisation prématurée.
-
-## Les leviers les plus rentables
-
-- Découper les routes et fonctionnalités lourdes
-- Stabiliser les calculs avec les Signals
-- Réduire le travail réalisé pendant la détection de changements
-- Optimiser les images et les polices
-
-## Mesurer avant et après
-
-Une amélioration est utile lorsqu'elle réduit un temps perceptible par l'utilisateur sans dégrader la lisibilité du code.`,
-          contentEn: `# Making Angular faster without making it complex
-
-Performance starts with measurement, not premature optimization.
-
-## High-impact improvements
-
-- Split heavy routes and features
-- Stabilize computations with Signals
-- Reduce work during change detection
-- Optimize images and fonts
-
-## Measure before and after
-
-An improvement matters when it reduces user-perceived latency without damaging code readability.`,
+  // Angular ne re-render que si items() change réellement
+  updateItem(id: number, patch: Partial<Item>) {
+    this.items.update(list =>
+      list.map(item => item.id === id ? { ...item, ...patch } : item)
+    );
+  }
+}` },
+            { id: 'b4', type: 'paragraph', content: '<h3>Lazy loading + preloading strategy</h3><p>Découpez vos routes et préchargez intelligemment avec <code>PreloadAllModules</code> ou une stratégie custom pour éviter les délais sur navigation.</p>' },
+            { id: 'b5', type: 'code', language: 'typescript', content: `@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, {
+      preloadingStrategy: PreloadAllModules,  // précharge en arrière-plan
+    }),
+  ],
+})
+export class AppModule {}` },
+            { id: 'b6', type: 'quote', content: "Une amélioration est utile lorsqu'elle réduit un temps perceptible par l'utilisateur sans dégrader la lisibilité du code.", caption: "Règle d'or perf" },
+          ],
           tags: ['Angular', 'Frontend', 'Performance'],
           published: true,
           featured: true,
@@ -476,30 +466,55 @@ An improvement matters when it reduces user-perceived latency without damaging c
           title: 'Concevoir une API Symfony qui dure',
           titleEn: 'Designing a Symfony API that lasts',
           slug: 'api-symfony-maintenable',
-          summary: 'Contrats explicites, validation aux frontières et responsabilités claires : les bases d’une API Symfony maintenable.',
+          summary: "Contrats explicites, validation aux frontières et responsabilités claires : les bases d'une API Symfony maintenable.",
           summaryEn: 'Explicit contracts, boundary validation, and clear responsibilities: the foundations of a maintainable Symfony API.',
-          content: `# Concevoir une API Symfony qui dure
+          content: "API Symfony maintenable : DTO, validation, architecture en couches, tests.",
+          contentEn: 'Maintainable Symfony API: DTOs, validation, layered architecture, testing.',
+          blocks: [
+            { id: 'b1', type: 'paragraph', content: "<h2>Concevoir une API Symfony qui dure</h2><p>Une API robuste ne dépend pas uniquement du framework. Elle dépend surtout de <strong>frontières claires</strong> entre les couches et de contrats explicites avec les clients.</p>" },
+            { id: 'b2', type: 'paragraph', content: '<h3>DTOs et validation aux frontières</h3><p>Les DTO séparent les données reçues du modèle métier et rendent la validation visible et testable. Symfony Validator + API Platform forment un duo puissant.</p>' },
+            { id: 'b3', type: 'code', language: 'php', content: `<?php
 
-Une API robuste ne dépend pas uniquement du framework. Elle dépend surtout de frontières claires.
+namespace App\Dto;
 
-## Des contrats explicites
+use Symfony\Component\Validator\Constraints as Assert;
 
-Les DTO permettent de distinguer les données reçues du modèle métier et rendent la validation visible.
+class CreateProjectDto
+{
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 3, max: 100)]
+    public string $title;
 
-## Une architecture proportionnée
+    #[Assert\NotBlank]
+    public string $description;
 
-Les couches doivent protéger le domaine sans transformer chaque fonctionnalité en cérémonie. La bonne architecture reste simple à expliquer à l'équipe.`,
-          contentEn: `# Designing a Symfony API that lasts
+    #[Assert\Url]
+    #[Assert\NotBlank]
+    public string $githubUrl;
 
-A robust API does not depend on the framework alone. It mostly depends on clear boundaries.
+    /** @var string[] */
+    #[Assert\All([new Assert\NotBlank()])]
+    public array $technologies = [];
+}` },
+            { id: 'b4', type: 'paragraph', content: `<h3>Service layer : un seul point d'entrée par cas d'usage</h3><p>Chaque fonctionnalité métier a son propre service. Le controller ne fait qu'orchestrer : valider, appeler le service, retourner la réponse.</p>` },
+            { id: 'b5', type: 'code', language: 'php', content: `#[Route('/api/projects', methods: ['POST'])]
+public function create(
+    Request $request,
+    ProjectService $service,
+    ValidatorInterface $validator
+): JsonResponse {
+    $dto = $this->serializer->deserialize($request->getContent(), CreateProjectDto::class, 'json');
+    
+    $errors = $validator->validate($dto);
+    if (count($errors) > 0) {
+        return $this->json(['errors' => (string) $errors], 422);
+    }
 
-## Explicit contracts
-
-DTOs separate incoming data from the domain model and make validation visible.
-
-## Proportionate architecture
-
-Layers should protect the domain without turning every feature into a ceremony. Good architecture remains easy to explain to the team.`,
+    $project = $service->create($dto);
+    return $this->json($project, 201, [], ['groups' => ['project:read']]);
+}` },
+            { id: 'b6', type: 'quote', content: "Les couches doivent protéger le domaine sans transformer chaque fonctionnalité en cérémonie. La bonne architecture reste simple à expliquer à l'équipe.", caption: 'Principe de proportionnalité' },
+          ],
           tags: ['Backend', 'Symfony', 'API'],
           published: true,
           featured: false,
@@ -510,36 +525,46 @@ Layers should protect the domain without turning every feature into a ceremony. 
           title: 'Une CI Docker rapide et fiable',
           titleEn: 'A fast and reliable Docker CI pipeline',
           slug: 'ci-docker-rapide-fiable',
-          summary: 'Caches, images reproductibles et feedback rapide : construire une CI qui aide réellement l’équipe.',
+          summary: "Caches, images reproductibles et feedback rapide : construire une CI qui aide réellement l'équipe.",
           summaryEn: 'Caching, reproducible images, and fast feedback: building CI that genuinely helps the team.',
-          content: `# Une CI Docker rapide et fiable
+          content: "Une bonne CI donne confiance sans ralentir l'équipe. Multi-stage builds, cache npm, GitHub Actions.",
+          contentEn: 'Good CI creates confidence without slowing the team. Multi-stage builds, npm cache, GitHub Actions.',
+          blocks: [
+            { id: 'b1', type: 'paragraph', content: "<h2>Une CI Docker rapide et fiable</h2><p>Une pipeline CI bien conçue est un <strong>multiplicateur de vitesse</strong>. Elle donne confiance en la qualité sans ralentir les livraisons.</p>" },
+            { id: 'b2', type: 'paragraph', content: '<h3>Multi-stage Dockerfile</h3><p>Séparer les étapes de build des artefacts finaux réduit la taille des images et isole les dépendances de dev.</p>' },
+            { id: 'b3', type: 'code', language: 'dockerfile', content: `# Stage build
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --frozen-lockfile
+COPY . .
+RUN npm run build
 
-Une bonne CI donne confiance sans ralentir l'équipe.
-
-## Images reproductibles
-
-Épinglez les versions importantes, séparez les étapes de build et exploitez correctement le cache des dépendances.
-
-## Feedback rapide
-
-- Lancer les contrôles les moins coûteux en premier
-- Exécuter les suites indépendantes en parallèle
-- Publier des erreurs lisibles
-- Garder les étapes de déploiement explicites`,
-          contentEn: `# A fast and reliable Docker CI pipeline
-
-Good CI creates confidence without slowing the team down.
-
-## Reproducible images
-
-Pin important versions, separate build stages, and use dependency caches effectively.
-
-## Fast feedback
-
-- Run inexpensive checks first
-- Execute independent suites in parallel
-- Publish readable failures
-- Keep deployment steps explicit`,
+# Stage production
+FROM node:20-alpine AS production
+WORKDIR /app
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
+EXPOSE 3000
+CMD ["node", "dist/main.js"]` },
+            { id: 'b4', type: 'paragraph', content: '<h3>GitHub Actions avec cache npm</h3><p>Le cache des node_modules peut diviser le temps de build par 3 sur un projet classique.</p>' },
+            { id: 'b5', type: 'code', language: 'yaml', content: `name: CI
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run test
+      - run: npm run build` },
+            { id: 'b6', type: 'quote', content: "Une CI qui échoue en moins de 3 minutes est une CI utile. Au-delà, les développeurs arrêtent de la surveiller.", caption: 'Principe DevOps' },
+          ],
           tags: ['DevOps', 'Docker', 'CI/CD'],
           published: true,
           featured: false,
@@ -547,33 +572,92 @@ Pin important versions, separate build stages, and use dependency caches effecti
           createdAt: new Date('2026-05-18T09:00:00Z'),
         },
         {
+          title: "10 tips Angular que j'utilise au quotidien",
+          titleEn: '10 Angular tips I use every day',
+          slug: 'tips-angular-quotidien',
+          summary: 'Des techniques concrètes pour écrire du code Angular plus propre, plus performant et plus maintenable.',
+          summaryEn: 'Concrete techniques to write cleaner, faster and more maintainable Angular code.',
+          content: "Tips Angular : standalone components, signals, lazy loading, OnPush et plus.",
+          contentEn: 'Angular tips: standalone components, signals, lazy loading, OnPush and more.',
+          blocks: [
+            { id: 'b1', type: 'paragraph', content: "<h2>10 tips Angular au quotidien</h2><p>Voici les patterns que j'utilise systématiquement dans mes projets Angular pour garder le code propre et performant.</p>" },
+            { id: 'b2', type: 'paragraph', content: '<h3>1. Composants standalone</h3><p>Depuis Angular 14+, les composants standalone suppriment le besoin de NgModule et rendent les dépendances explicites.</p>' },
+            { id: 'b3', type: 'code', language: 'typescript', content: `@Component({
+  standalone: true,
+  imports: [CommonModule, RouterModule, FormsModule],
+  template: \`<h1>{{ title() }}</h1>\`,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class MyComponent {
+  title = signal('Hello');
+}` },
+            { id: 'b4', type: 'paragraph', content: '<h3>2. takeUntilDestroyed</h3><p>Fini le boilerplate de désabonnement manuel. Le hook takeUntilDestroyed gère automatiquement le cycle de vie.</p>' },
+            { id: 'b5', type: 'code', language: 'typescript', content: `import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+
+@Component({...})
+export class MyComponent {
+  private destroyRef = inject(DestroyRef);
+
+  ngOnInit() {
+    this.service.data$
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(data => this.data.set(data));
+  }
+}` },
+            { id: 'b6', type: 'paragraph', content: '<h3>3. Lazy loading des routes</h3><p>Ne chargez que ce dont utilisateur a besoin. Le lazy loading réduit le bundle initial et améliore le First Contentful Paint.</p>' },
+            { id: 'b7', type: 'code', language: 'typescript', content: `export const routes: Routes = [
+  { path: '', component: HomeComponent },
+  {
+    path: 'admin',
+    loadChildren: () => import('./admin/routes').then(m => m.ADMIN_ROUTES)
+  },
+  {
+    path: 'blog/:slug',
+    loadComponent: () => import('./blog/blog-detail').then(m => m.BlogDetailComponent)
+  },
+];` },
+            { id: 'b8', type: 'quote', content: "Les bonnes performances Angular ne viennent pas d'une seule technique, mais de l'accumulation de bonnes habitudes.", caption: "Retour d'expérience" },
+          ],
+          tags: ['Angular', 'TypeScript', 'Frontend', 'Performance'],
+          published: true,
+          featured: true,
+          readTime: 8,
+          createdAt: new Date('2026-06-28T09:00:00Z'),
+        },
+        {
           title: 'Clean Architecture : garder ce qui aide',
           titleEn: 'Clean Architecture: keeping what helps',
           slug: 'clean-architecture-pragmatique',
           summary: 'Une lecture pragmatique de la Clean Architecture pour protéger le métier sans multiplier les abstractions.',
           summaryEn: 'A pragmatic take on Clean Architecture that protects business logic without multiplying abstractions.',
-          content: `# Clean Architecture : garder ce qui aide
+          content: "Clean Architecture : une direction, pas un concours de dossiers. Protéger le domaine, éviter l'abstraction automatique.",
+          contentEn: 'Clean Architecture: a direction, not a folder contest. Protect the domain, avoid automatic abstractions.',
+          blocks: [
+            { id: 'b1', type: 'paragraph', content: "<h2>Clean Architecture : garder ce qui aide</h2><p>La Clean Architecture est souvent mal interprétée comme une liste de dossiers à créer. C'est avant tout une <strong>direction</strong> : isoler les décisions métier du reste.</p>" },
+            { id: 'b2', type: 'paragraph', content: "<h3>Protéger le domaine</h3><p>Le cœur de l'application doit pouvoir évoluer sans dépendre directement du transport HTTP ou de la base de données. En pratique, cela signifie des <strong>interfaces de repository</strong> et des use cases indépendants de l'infrastructure.</p>" },
+            { id: 'b3', type: 'code', language: 'typescript', content: `// ✅ Use case : aucune dépendance NestJS, aucun Prisma direct
+export class CreateProjectUseCase {
+  constructor(private readonly repo: IProjectRepository) {}
 
-La Clean Architecture est une direction, pas un concours de dossiers.
+  async execute(dto: CreateProjectDto): Promise<Project> {
+    const project = Project.create(dto);  // logique métier ici
+    return this.repo.save(project);       // l'infra est injectée
+  }
+}
 
-## Protéger les décisions métier
+// L'implémentation Prisma est dans la couche infrastructure
+@Injectable()
+export class PrismaProjectRepository implements IProjectRepository {
+  constructor(private prisma: PrismaService) {}
 
-Le cœur de l'application doit pouvoir évoluer sans dépendre directement du transport HTTP ou de la base de données.
-
-## Éviter l'abstraction automatique
-
-Une interface devient utile lorsqu'elle exprime une vraie frontière ou permet plusieurs implémentations crédibles. Sinon, elle ajoute souvent du bruit.`,
-          contentEn: `# Clean Architecture: keeping what helps
-
-Clean Architecture is a direction, not a folder competition.
-
-## Protect business decisions
-
-The application core should evolve without directly depending on HTTP transport or database details.
-
-## Avoid automatic abstractions
-
-An interface is useful when it expresses a real boundary or supports credible implementations. Otherwise, it often adds noise.`,
+  async save(project: Project): Promise<Project> {
+    return this.prisma.project.create({ data: project });
+  }
+}` },
+            { id: 'b4', type: 'paragraph', content: "<h3>Éviter l'abstraction automatique</h3><p>Une interface est utile lorsqu'elle exprime une vraie frontière ou permet plusieurs implémentations crédibles. Pour un CRUD simple, une architecture en couches (controller → service → repository) suffit souvent. <strong>Ne créez pas de complexité pour l'amour de la complexité.</strong></p>" },
+            { id: 'b5', type: 'paragraph', content: `<h3>Quand aller plus loin ?</h3><p>La Clean Architecture complète vaut l'investissement quand le domaine est riche (règles métier complexes, multiples sources de données, besoin de testabilité maximale). Pour la majorité des applications CRUD, une architecture simple et bien organisée est largement suffisante.</p>` },
+            { id: 'b6', type: 'quote', content: "La complexité architecturale doit être proportionnelle à la complexité métier, pas à l'ambition du développeur.", caption: 'Principe de proportionnalité' },
+          ],
           tags: ['Architecture', 'Backend', 'Testing'],
           published: true,
           featured: true,

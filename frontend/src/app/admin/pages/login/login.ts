@@ -185,6 +185,7 @@ export class AdminLoginComponent {
     this.auth.login(this.email, this.password).subscribe({
       next: () => {
         this.toast.success('Connexion établie. Bienvenue, Administrateur.');
+        this.loading.set(false);
         this.router.navigate(['/admin/dashboard']);
       },
       error: (err: any) => {

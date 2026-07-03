@@ -10,6 +10,7 @@ interface EduCard {
   year: string;
   type: string;
   description: string;
+  certificateUrl?: string;
 }
 
 @Component({
@@ -50,7 +51,11 @@ interface EduCard {
             <h3>{{ edu.degree }}</h3>
             <span class="school">{{ edu.school }} · {{ edu.field }}</span>
             <div class="divider"></div>
-            <p class="edu-desc">{{ edu.description }}</p>
+            <div class="edu-desc" [innerHTML]="edu.description"></div>
+            <a *ngIf="edu.certificateUrl" [href]="edu.certificateUrl" target="_blank" rel="noopener noreferrer" class="cert-link">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              {{ t.currentLang() === 'fr' ? 'Voir le diplôme' : 'View certificate' }}
+            </a>
           </div>
         </div>
 
@@ -127,6 +132,9 @@ interface EduCard {
     .divider { width: 40px; height: 2px; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 2px; margin: 1.5rem 0; }
 
     .edu-desc { color: var(--text-muted); font-size: 0.9rem; line-height: 1.7; margin-bottom: 1.2rem; }
+    .edu-desc :is(p, ul, ol) { margin-bottom: 0.5rem; }
+    .cert-link { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.75rem; font-weight: 700; color: var(--primary); text-decoration: none; transition: 0.2s; border: 1px solid rgba(192,132,252,0.3); border-radius: 6px; padding: 0.4rem 0.8rem; }
+    .cert-link:hover { background: rgba(192,132,252,0.1); transform: translateY(-2px); }
 
     .skills { display: flex; gap: 0.5rem; flex-wrap: wrap; }
     .chip {
@@ -161,6 +169,7 @@ export class EducationComponent implements OnInit {
           year: this.formatYear(edu.startDate, edu.endDate),
           type: this.getType(edu.degree),
           description: edu.description ?? '',
+          certificateUrl: edu.certificateUrl,
         }));
         this.loading.set(false);
       },

@@ -26,14 +26,7 @@ export interface Project {
   order?: number;
   accent?: string;
   slug?: string;
-  challenge?: string;
-  challengeEn?: string;
-  solution?: string;
-  solutionEn?: string;
-  results?: string[];
-  resultsEn?: string[];
-  role?: string;
-  duration?: string;
+  gallery?: string[];
 }
 
 export interface Experience {
@@ -47,6 +40,8 @@ export interface Experience {
   description: string;
   descriptionEn?: string;
   skills: string[];
+  logoUrl?: string;
+  linkedinUrl?: string;
   order?: number;
 }
 
@@ -58,8 +53,10 @@ export interface Education {
   startDate: string;
   endDate?: string;
   description?: string;
+  certificateUrl?: string;
   order?: number;
 }
+
 
 export interface BlogPost {
   id?: number;
@@ -75,6 +72,7 @@ export interface BlogPost {
   featured?: boolean;
   readTime?: number;
   tags: string[];
+  blocks?: any[];
   createdAt?: string;
   updatedAt?: string;
 }

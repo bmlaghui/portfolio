@@ -11,6 +11,8 @@ export class CreateExperienceDto {
   @IsString() description: string;
   @IsOptional() @IsString() descriptionEn?: string;
   @IsOptional() @IsArray() @IsString({ each: true }) skills?: string[];
+  @IsOptional() @IsString() logoUrl?: string;
+  @IsOptional() @IsString() linkedinUrl?: string;
   @IsOptional() @IsInt() order?: number;
 }
 

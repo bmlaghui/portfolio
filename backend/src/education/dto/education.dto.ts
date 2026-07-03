@@ -8,6 +8,7 @@ export class CreateEducationDto {
   @IsDateString() startDate: string;
   @IsOptional() @IsDateString() endDate?: string;
   @IsOptional() @IsString() description?: string;
+  @IsOptional() @IsString() certificateUrl?: string;
   @IsOptional() @IsInt() order?: number;
 }
 

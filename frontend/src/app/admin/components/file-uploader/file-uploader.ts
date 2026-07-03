@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, signal, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, signal, inject, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ToastService } from '../../../core/services/toast.service';
@@ -162,6 +162,8 @@ export class FileUploaderComponent {
   @Output() uploaded = new EventEmitter<string>();
   @Output() removed = new EventEmitter<void>();
 
+  @ViewChild('fileInput') fileInputRef!: ElementRef<HTMLInputElement>;
+
   isDragging = signal(false);
   isUploading = signal(false);
   progress = signal(0);
@@ -212,7 +214,16 @@ export class FileUploaderComponent {
         this.progress.set(100);
         setTimeout(() => {
           this.isUploading.set(false);
-          this.currentUrl = res.url;
+          // If the parent didn't provide a currentUrl (gallery mode), reset to placeholder
+          if (this.currentUrl === undefined || this.currentUrl === '') {
+            this.currentUrl = undefined;
+          } else {
+            this.currentUrl = res.url;
+          }
+          // Always reset the native file input so the same file can be re-selected
+          if (this.fileInputRef?.nativeElement) {
+            this.fileInputRef.nativeElement.value = '';
+          }
           this.uploaded.emit(res.url);
         }, 500);
       },

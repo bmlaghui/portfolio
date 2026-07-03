@@ -14,6 +14,7 @@ export class CreateBlogPostDto {
   @IsOptional() @IsBoolean() featured?: boolean;
   @IsOptional() @IsInt() readTime?: number;
   @IsOptional() @IsArray() @IsString({ each: true }) tags?: string[];
+  @IsOptional() blocks?: any;
 }
 
 export class UpdateBlogPostDto extends PartialType(CreateBlogPostDto) {}

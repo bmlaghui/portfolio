@@ -123,6 +123,7 @@ import { TranslationService } from '../../services/translation.service';
       background-size: 60px 60px;
       mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
       z-index: 0;
+      pointer-events: none;
     }
 
     /* ─── Content ─── */

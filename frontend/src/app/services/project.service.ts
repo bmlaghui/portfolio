@@ -17,14 +17,7 @@ export interface Project {
   order: number;
   accent?: string;
   slug?: string;
-  challenge?: string;
-  challengeEn?: string;
-  solution?: string;
-  solutionEn?: string;
-  results?: string[];
-  resultsEn?: string[];
-  role?: string;
-  duration?: string;
+  gallery?: string[];
 }
 
 @Injectable({
