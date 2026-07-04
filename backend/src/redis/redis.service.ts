@@ -9,6 +9,9 @@ export class RedisService {
     this.client = new Redis({
       host: process.env.REDIS_HOST || 'redis',
       port: Number(process.env.REDIS_PORT) || 6379,
+      connectTimeout: 1500,
+      maxRetriesPerRequest: 1,
+      enableOfflineQueue: false,
       retryStrategy: (times) => Math.min(times * 50, 2000),
     });
   }

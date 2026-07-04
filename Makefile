@@ -1,4 +1,4 @@
-.PHONY: help dev prod prod-build prod-check prod-stop prod-status prod-logs prod-seed stop status logs seed migrate migrate-prod rebuild clean restart-build
+.PHONY: help dev prod prod-build prod-check prod-stop prod-status prod-logs prod-seed stop status logs seed migrate migrate-prod rebuild clean restart-build restart-backend
 
 DOCKER_COMPOSE ?= docker compose
 PROD_ENV ?= .env.prod
@@ -22,6 +22,7 @@ help:
 	@echo "  make migrate-prod   - Run Prisma migrations (prod)"
 	@echo "  make seed           - Seed development database"
 	@echo "  make rebuild        - Rebuild all images"
+	@echo "  make restart-backend - Rebuild backend and refresh the frontend proxy"
 	@echo "  make clean          - Clean up unused resources"
 
 dev:
@@ -109,4 +110,8 @@ clean:
 	docker system prune -f --volumes
 
 restart-build:
-	$(DEV_COMPOSE) up --build -d
+	$(DEV_COMPOSE) up --build --force-recreate --renew-anon-volumes -d
+
+restart-backend:
+	$(DEV_COMPOSE) up -d --build --force-recreate --renew-anon-volumes backend
+	$(DEV_COMPOSE) restart frontend

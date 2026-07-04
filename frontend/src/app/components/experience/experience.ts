@@ -185,7 +185,8 @@ interface Exp {
       transition: all 0.3s;
       position: relative;
     }
-    .tl-dot.is-current {
+    .tl-dot.is-current,
+    .tl-dot.active {
       background: var(--primary);
       border-color: var(--primary);
       box-shadow: 0 0 0 4px rgba(192,132,252,0.2), 0 0 20px rgba(192,132,252,0.4);
@@ -315,6 +316,13 @@ interface Exp {
       .tl-side:last-child:not(.card-side) { display: none; }
       .exp-card::after, .tl-row.flip .card-side .exp-card::after { display: none; }
       .exp-card { max-width: 100%; }
+      .exp-card.reveal-left,
+      .exp-card.reveal-right,
+      .tl-dot.reveal-scale {
+        opacity: 1;
+        transform: none;
+        transition-delay: 0s !important;
+      }
     }
   `]
 })

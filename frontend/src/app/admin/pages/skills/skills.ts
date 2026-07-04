@@ -49,17 +49,29 @@ type SkillTab = 'info' | 'level';
 
       <div class="content-area">
         <div class="skills-matrix" *ngIf="skills().length > 0; else emptyState">
-          <div class="skill-node glass-neo-deep" *ngFor="let s of skills(); let i = index" [style.animation-delay]="i * 0.05 + 's'">
+          <article class="skill-node" *ngFor="let s of skills(); let i = index" [style.animation-delay]="i * 0.05 + 's'">
             <div class="node-header">
-              <div class="cat-pill" [attr.data-cat]="s.category">{{ s.category | uppercase }}</div>
-              <div class="node-actions"><button (click)="openModal(s)">✏️</button><button class="del" (click)="deleteSkill(s.id!)">🗑️</button></div>
+              <span class="cat-pill" [attr.data-cat]="s.category"><i></i>{{ s.category | uppercase }}</span>
+              <span class="order-badge">#{{ (s.order || 0).toString().padStart(2, '0') }}</span>
             </div>
-            <div class="node-main"><div class="node-icon">{{ s.icon || '🛠️' }}</div><h3 class="node-name">{{ s.name }}</h3></div>
+            <div class="node-main">
+              <div class="node-icon">{{ s.icon || '🛠️' }}</div>
+              <div><span class="node-kicker">TECHNOLOGIE</span><h3 class="node-name">{{ s.name }}</h3></div>
+            </div>
             <div class="node-level">
-               <div class="level-bar-wrap"><div class="level-fill" [style.width]="((s.level || 0) * 20) + '%'" [attr.data-lvl]="s.level"></div><div class="level-overlay"></div></div>
-               <div class="level-label">EXPERTISE_LEVEL: {{ s.level }}/5</div>
+              <div class="level-head"><span>MAÎTRISE</span><b>{{ levelLabel(s.level || 1) }}</b></div>
+              <div class="level-segments">
+                <span *ngFor="let point of levelPoints" [class.active]="point <= (s.level || 0)"></span>
+              </div>
             </div>
-          </div>
+            <footer class="node-footer">
+              <span>{{ s.level || 0 }}/5</span>
+              <div class="node-actions">
+                <button type="button" class="edit" (click)="openModal(s)">ÉDITER</button>
+                <button type="button" class="del" (click)="deleteSkill(s.id!)" aria-label="Supprimer">✕</button>
+              </div>
+            </footer>
+          </article>
         </div>
         <ng-template #emptyState>
           <app-empty-data icon="🔌" title="Arsenal Déconnecté" text="Aucune compétence n'est actuellement liée à la matrice." (action)="openModal()"></app-empty-data>
@@ -70,40 +82,51 @@ type SkillTab = 'info' | 'level';
       </div>
 
       <div class="modal-root" *ngIf="showModal()" (click)="closeModal()">
-        <div class="modal-frame glass-neo-deep" (click)="$event.stopPropagation()">
-            <aside class="modal-sidebar">
-               <div class="brand">SKILLS.DB</div>
-               <nav class="nav-steps">
-                  <button [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')"><span>01 BASICS</span><span class="dot-status" [class.valid]="formSkill.name && formSkill.category"></span></button>
-                  <button [class.active]="activeTab() === 'level'" (click)="activeTab.set('level')"><span>02 EXPERTISE</span><span class="dot-status" [class.valid]="true"></span></button>
-               </nav>
-            </aside>
-            <main class="modal-main">
-               <header class="main-header">
-                  <div class="titles"><h2>CALIBRAGE TECHNIQUE</h2><span class="breadcrumb">admin // arsenal // {{ activeTab() }}</span></div>
-                  <button class="btn-exit" (click)="closeModal()">×</button>
-               </header>
-               <form (ngSubmit)="save()" class="liquid-form" #skillForm="ngForm">
-                  <div class="modal-scroll-area">
-                    <div class="tab-pane reveal" *ngIf="activeTab() === 'info'">
-                       <div class="form-group"><label>Nom Technologie</label><input type="text" [(ngModel)]="formSkill.name" name="name" required #sn="ngModel" placeholder="Ex: Angular..." class="cyber-input" [class.invalid]="sn.invalid && sn.touched"></div>
-                       <div class="form-group"><label>Catégorie</label><select [(ngModel)]="formSkill.category" name="cat" required class="cyber-input"><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="DevOps">DevOps</option><option value="Cloud">Cloud/Infra</option><option value="Other">Autre</option></select></div>
-                       <div class="form-group"><label>Icône (Emoji / SVG)</label><input type="text" [(ngModel)]="formSkill.icon" name="icon" placeholder="🚀, ⚛️..." class="cyber-input"></div>
-                       <div class="next-step-hint"><button type="button" class="btn-next-tab" (click)="activeTab.set('level')">CALIBRATION EXPERTISE →</button></div>
-                    </div>
-                    <div class="tab-pane reveal" *ngIf="activeTab() === 'level'">
-                       <div class="form-group"><label>Niveau de maîtrise : <span style="color:var(--primary); font-weight:950;">{{ formSkill.level }}/5</span></label>
-                          <div class="range-wrap">
-                             <input type="range" [(ngModel)]="formSkill.level" name="lvl" min="1" max="5" step="1" class="cyber-range">
-                             <div class="range-labels"><span>INITIATION</span><span>MAÎTRISE</span><span>EXPERTISE</span></div>
-                          </div>
-                       </div>
-                       <div class="form-group"><label>Ordre d'affichage</label><input type="number" [(ngModel)]="formSkill.order" name="ord" class="cyber-input"></div>
+        <div class="skill-modal" (click)="$event.stopPropagation()">
+          <header class="sm-header">
+            <div><span>SKILLS.DB</span><h2>{{ editingId() ? 'Modifier la compétence' : 'Nouvelle compétence' }}</h2></div>
+            <button type="button" (click)="closeModal()" aria-label="Fermer">✕</button>
+          </header>
+          <nav class="sm-tabs">
+            <button type="button" [class.active]="activeTab() === 'info'" (click)="activeTab.set('info')"><i>01</i><span>Identité<small>Nom, catégorie, icône</small></span><b [class.done]="formSkill.name && formSkill.category">✓</b></button>
+            <button type="button" [class.active]="activeTab() === 'level'" (click)="activeTab.set('level')"><i>02</i><span>Expertise<small>Niveau et position</small></span><b class="done">✓</b></button>
+          </nav>
+          <form (ngSubmit)="save()" class="sm-form" #skillForm="ngForm">
+            <div class="sm-body">
+              <section class="sm-pane" *ngIf="activeTab() === 'info'">
+                <div class="pane-title"><span>ÉTAPE 01 · IDENTITÉ</span><h3>Ajoutez une technologie à votre arsenal.</h3><p>Choisissez un nom court et une icône immédiatement reconnaissable.</p></div>
+                <div class="identity-layout">
+                  <div class="icon-preview">{{ formSkill.icon || '🛠️' }}<small>APERÇU</small></div>
+                  <div class="fields">
+                    <label><span class="label-text">Nom de la technologie <em>*</em></span><input type="text" [(ngModel)]="formSkill.name" name="name" required placeholder="Ex. Angular"></label>
+                    <div class="field-grid">
+                      <label><span class="label-text">Catégorie <em>*</em></span><select [(ngModel)]="formSkill.category" name="category" required><option value="Frontend">Frontend</option><option value="Backend">Backend</option><option value="DevOps">DevOps</option><option value="Cloud">Cloud / Infra</option><option value="Other">Autre</option></select></label>
+                      <label>Icône<input type="text" [(ngModel)]="formSkill.icon" name="icon" maxlength="12" placeholder="🚀 ou ⚛️"></label>
                     </div>
                   </div>
-                  <footer class="modal-footer-final"><button type="button" class="btn-cancel" (click)="closeModal()">ANNULER</button><div class="spacer"></div><button type="submit" class="btn-submit-cyber" [disabled]="skillForm.invalid">SCELLER DANS L'ARSENAL</button></footer>
-               </form>
-            </main>
+                </div>
+              </section>
+              <section class="sm-pane" *ngIf="activeTab() === 'level'">
+                <div class="pane-title"><span>ÉTAPE 02 · EXPERTISE</span><h3>Positionnez votre niveau avec justesse.</h3><p>Cette jauge est visible sur le portfolio : privilégiez une évaluation crédible.</p></div>
+                <div class="level-studio">
+                  <div class="level-score"><strong>{{ formSkill.level }}</strong><span>/ 5</span><small>{{ levelLabel(formSkill.level || 1) }}</small></div>
+                  <div class="range-wrap">
+                    <input type="range" [(ngModel)]="formSkill.level" name="level" min="1" max="5" step="1">
+                    <div class="range-labels"><span>Découverte</span><span>Autonome</span><span>Expertise</span></div>
+                  </div>
+                </div>
+                <label class="order-field">Ordre d’affichage<input type="number" min="0" [(ngModel)]="formSkill.order" name="order"><small>Les valeurs les plus basses apparaissent en premier.</small></label>
+              </section>
+            </div>
+            <footer class="sm-footer">
+              <button type="button" class="cancel" (click)="closeModal()">Annuler</button>
+              <div>
+                <button type="button" class="previous" *ngIf="activeTab() === 'level'" (click)="activeTab.set('info')">← Précédent</button>
+                <button type="button" class="next" *ngIf="activeTab() === 'info'" (click)="activeTab.set('level')">Continuer →</button>
+                <button type="submit" class="save" *ngIf="activeTab() === 'level'" [disabled]="skillForm.invalid">{{ editingId() ? 'Enregistrer' : 'Ajouter à l’arsenal' }}</button>
+              </div>
+            </footer>
+          </form>
         </div>
       </div>
     </div>
@@ -111,31 +134,99 @@ type SkillTab = 'info' | 'level';
   styles: [`
     .btn-cyber-primary { background: #fff; color: #000; border: none; padding: 1rem 3rem; font-weight: 950; text-transform: uppercase; cursor: pointer; transition: 0.3s; clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%); }
     .btn-cyber-primary:hover { background: var(--primary); color: #fff; }
-    .skills-matrix { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 2rem; }
-    .skill-node { padding: 2.5rem; display: flex; flex-direction: column; gap: 2rem; transition: 0.4s; overflow: hidden; border-radius: 20px; border: 1px solid rgba(255,255,255,0.03); }
-    .skill-node:hover { transform: translateY(-5px); border-color: var(--primary); background: rgba(192, 132, 252, 0.05); }
+    .skills-matrix { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+    .skill-node { position: relative; overflow: hidden; display: flex; flex-direction: column; min-height: 280px; padding: 1.4rem; background: radial-gradient(circle at 90% 0, rgba(192,132,252,.06), transparent 35%), #0a0a0a; border: 1px solid #181818; border-radius: 16px; transition: .3s; }
+    .skill-node::before { content: ''; position: absolute; inset: 0 0 auto; height: 2px; background: linear-gradient(90deg, transparent, rgba(192,132,252,.6), transparent); opacity: 0; transition: .3s; }
+    .skill-node:hover { transform: translateY(-5px); border-color: rgba(192,132,252,.25); box-shadow: 0 20px 45px rgba(0,0,0,.35); }
+    .skill-node:hover::before { opacity: 1; }
     .node-header { display: flex; justify-content: space-between; align-items: center; }
-    .cat-pill { font-size: 0.6rem; font-weight: 950; padding: 0.2rem 0.6rem; background: #000; border-radius: 4px; color: #475569; border: 1px solid #111; letter-spacing: 1px; }
-    .node-actions { display: flex; gap: 0.5rem; }
-    .node-actions button { background: none; border: none; font-size: 1rem; cursor: pointer; opacity: 0.3; transition: 0.3s; }
-    .skill-node:hover .node-actions button { opacity: 1; }
-    .node-actions button:hover { transform: scale(1.2); }
-    .node-actions .del:hover { color: #ef4444; }
-    .node-main { display: flex; align-items: center; gap: 1.5rem; }
-    .node-icon { font-size: 2.5rem; filter: drop-shadow(0 0 10px rgba(255,255,255,0.1)); }
-    .node-name { font-size: 1.6rem; font-weight: 950; color: #fff; margin: 0; }
-    .level-bar-wrap { height: 6px; background: #000; border-radius: 10px; overflow: hidden; position: relative; border: 1px solid #111; }
-    .level-fill { height: 100%; background: var(--primary); box-shadow: 0 0 15px var(--primary); transition: 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
-    .level-label { font-size: 0.65rem; font-weight: 950; color: #222; margin-top: 0.5rem; letter-spacing: 1px; }
-    .btn-exit { background: none; border: none; font-size: 2.5rem; color: #111; cursor: pointer; }
-    .btn-exit:hover { color: #fff; }
+    .cat-pill { min-width: 0; max-width: 72%; display: flex; align-items: center; gap: .4rem; overflow: hidden; padding: .28rem .55rem; color: #667080; background: #0d0d0d; border: 1px solid #1d1d1d; border-radius: 20px; font-size: .54rem; font-weight: 900; letter-spacing: .8px; text-overflow: ellipsis; white-space: nowrap; }
+    .cat-pill i { width: 5px; height: 5px; flex-shrink: 0; background: var(--primary); border-radius: 50%; box-shadow: 0 0 7px var(--primary); }
+    .cat-pill[data-cat="Backend"] i { background: #22d3ee; box-shadow: 0 0 7px #22d3ee; }
+    .cat-pill[data-cat="DevOps"] i { background: #f59e0b; box-shadow: 0 0 7px #f59e0b; }
+    .cat-pill[data-cat="Cloud"] i { background: #60a5fa; box-shadow: 0 0 7px #60a5fa; }
+    .order-badge { color: #303640; font: .6rem monospace; }
+    .node-main { flex: 1; display: flex; align-items: center; gap: 1rem; min-width: 0; padding: 1.7rem 0 1.4rem; }
+    .node-main > div:last-child { min-width: 0; }
+    .node-icon { width: 58px; height: 58px; display: grid; place-items: center; flex-shrink: 0; overflow: hidden; font-size: 2rem; background: #0e0e0e; border: 1px solid #1c1c1c; border-radius: 14px; filter: drop-shadow(0 8px 15px rgba(0,0,0,.3)); }
+    .node-kicker { color: #353c47; font-size: .5rem; font-weight: 900; letter-spacing: 1.6px; }
+    .node-name { overflow-wrap: anywhere; margin: .2rem 0 0; color: #f1f5f9; font-size: 1.35rem; font-weight: 850; letter-spacing: -.4px; }
+    .node-level { padding-bottom: 1.2rem; }
+    .level-head { display: flex; justify-content: space-between; margin-bottom: .5rem; color: #363d48; font-size: .54rem; font-weight: 850; letter-spacing: 1px; }
+    .level-head b { color: #6c7480; font-size: .56rem; }
+    .level-segments { display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; }
+    .level-segments span { height: 5px; background: #191919; border-radius: 5px; }
+    .level-segments span.active { background: linear-gradient(90deg, #8b5cf6, #c084fc); box-shadow: 0 0 8px rgba(192,132,252,.25); }
+    .node-footer { display: flex; justify-content: space-between; align-items: center; padding-top: .9rem; border-top: 1px solid #171717; }
+    .node-footer > span { color: #3f4651; font: .65rem monospace; }
+    .node-actions { display: flex; gap: .4rem; }
+    .node-actions button { height: 31px; padding: 0 .7rem; border-radius: 7px; cursor: pointer; font-size: .57rem; font-weight: 900; transition: .2s; }
+    .node-actions .edit { color: #d8b4fe; background: rgba(192,132,252,.08); border: 1px solid rgba(192,132,252,.2); }
+    .node-actions .edit:hover { color: #080808; background: var(--primary); }
+    .node-actions .del { width: 31px; padding: 0; color: #f87171; background: rgba(239,68,68,.05); border: 1px solid rgba(239,68,68,.15); }
+    .node-actions .del:hover { color: #fff; background: #dc2626; }
 
-    .modal-scroll-area { max-height: 60vh; overflow-y: auto; padding-right: 1rem; margin-bottom: 2rem; }
-    .modal-scroll-area::-webkit-scrollbar { width: 4px; }
-    .modal-scroll-area::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 10px; }
-
-    .cyber-range { width: 100%; accent-color: var(--primary); cursor: pointer; height: 30px; }
-    .range-labels { display: flex; justify-content: space-between; margin-top: 1rem; font-size: 0.6rem; font-weight: 950; color: #222; letter-spacing: 1px; }
+    .modal-root { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 1rem; background: rgba(0,0,0,.82); backdrop-filter: blur(8px); }
+    .skill-modal { width: min(760px, 100%); max-height: 92vh; display: flex; flex-direction: column; overflow: hidden; background: radial-gradient(circle at 90% 0, rgba(192,132,252,.07), transparent 30%), #080808; border: 1px solid #1d1d1d; border-radius: 18px; box-shadow: 0 35px 90px rgba(0,0,0,.8); }
+    .sm-header { display: flex; align-items: center; justify-content: space-between; padding: 1.15rem 1.5rem; border-bottom: 1px solid #151515; }
+    .sm-header > div { display: flex; align-items: center; gap: .8rem; }
+    .sm-header div > span { padding: .25rem .5rem; color: var(--primary); background: rgba(192,132,252,.08); border: 1px solid rgba(192,132,252,.18); border-radius: 5px; font: 900 .54rem monospace; letter-spacing: 1.4px; }
+    .sm-header h2 { margin: 0; color: #e5e7eb; font-size: .95rem; }
+    .sm-header > button { width: 32px; height: 32px; color: #4b5360; background: transparent; border: 0; border-radius: 7px; cursor: pointer; }
+    .sm-header > button:hover { color: #fff; background: #141414; }
+    .sm-tabs { display: grid; grid-template-columns: repeat(2, 1fr); padding: 0 1.5rem; border-bottom: 1px solid #151515; }
+    .sm-tabs button { display: flex; align-items: center; gap: .7rem; padding: .85rem 1rem; color: #414853; background: transparent; border: 0; border-bottom: 2px solid transparent; text-align: left; cursor: pointer; }
+    .sm-tabs button.active { color: #dfe4ec; border-bottom-color: var(--primary); }
+    .sm-tabs i { font: normal 800 .55rem monospace; opacity: .6; }
+    .sm-tabs button > span { flex: 1; display: flex; flex-direction: column; gap: .12rem; font-size: .7rem; font-weight: 800; }
+    .sm-tabs small { color: #303640; font-size: .56rem; }
+    .sm-tabs b { width: 16px; height: 16px; display: grid; place-items: center; color: #252525; border: 1px solid #222; border-radius: 50%; font-size: .5rem; }
+    .sm-tabs b.done { color: #061109; background: #4ade80; border-color: #4ade80; }
+    .sm-form { min-height: 0; display: flex; flex-direction: column; }
+    .sm-body { overflow-y: auto; padding: 1.8rem; }
+    .sm-pane { display: flex; flex-direction: column; gap: 1.5rem; animation: sm-in .25s ease; }
+    @keyframes sm-in { from { opacity: 0; transform: translateY(5px); } }
+    .pane-title > span { color: var(--primary); font: 900 .55rem monospace; letter-spacing: 1.5px; }
+    .pane-title h3 { margin: .5rem 0 .25rem; color: #f1f5f9; font-size: 1.35rem; }
+    .pane-title p { margin: 0; color: #4b5360; font-size: .7rem; }
+    .identity-layout { display: grid; grid-template-columns: 130px 1fr; gap: 1.4rem; align-items: start; }
+    .icon-preview { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .7rem; font-size: 3.2rem; background: radial-gradient(circle, rgba(192,132,252,.1), transparent 65%), #0b0b0b; border: 1px solid #1c1c1c; border-radius: 14px; }
+    .icon-preview small { color: #353c46; font: .5rem monospace; letter-spacing: 1.3px; }
+    .fields, .field-grid { display: grid; gap: 1rem; }
+    .field-grid { grid-template-columns: 1fr 1fr; }
+    .fields label, .order-field { display: flex; flex-direction: column; gap: .4rem; color: #6d7581; font-size: .64rem; font-weight: 800; text-transform: uppercase; letter-spacing: .6px; }
+    .label-text { display: inline-flex; align-items: baseline; gap: .22rem; }
+    label em { color: var(--primary); font-style: normal; }
+    .fields input, .fields select, .order-field input { width: 100%; box-sizing: border-box; padding: .78rem .85rem; color: #dce2eb; background: #0b0b0b; border: 1px solid #1d1d1d; border-radius: 8px; outline: 0; font-size: .82rem; }
+    .fields input:focus, .fields select:focus, .order-field input:focus { border-color: rgba(192,132,252,.5); }
+    .level-studio { display: grid; grid-template-columns: 150px 1fr; gap: 1.5rem; align-items: center; padding: 1.3rem; background: #0b0b0b; border: 1px solid #1a1a1a; border-radius: 13px; }
+    .level-score { display: grid; grid-template-columns: auto 1fr; align-items: end; border-right: 1px solid #1b1b1b; }
+    .level-score strong { color: var(--primary); font-size: 3.2rem; line-height: .9; }
+    .level-score > span { color: #3e4550; font-size: .8rem; }
+    .level-score small { grid-column: 1/-1; margin-top: .55rem; color: #747d89; font-size: .62rem; font-weight: 800; }
+    .range-wrap input { width: 100%; accent-color: var(--primary); cursor: pointer; }
+    .range-labels { display: flex; justify-content: space-between; margin-top: .55rem; color: #343b46; font-size: .52rem; font-weight: 800; }
+    .order-field { max-width: 240px; }
+    .order-field small { color: #343a43; font-size: .55rem; font-weight: 500; text-transform: none; }
+    .sm-footer { display: flex; justify-content: space-between; align-items: center; padding: .9rem 1.5rem; background: #070707; border-top: 1px solid #151515; }
+    .sm-footer > div { display: flex; gap: .5rem; }
+    .sm-footer button { padding: .58rem 1rem; border-radius: 8px; cursor: pointer; font-size: .68rem; font-weight: 800; }
+    .sm-footer .cancel { color: #4d5561; background: transparent; border: 1px solid #1c1c1c; }
+    .sm-footer .previous { color: #707986; background: #0d0d0d; border: 1px solid #202020; }
+    .sm-footer .next { color: #e2e8f0; background: #151515; border: 1px solid #292929; }
+    .sm-footer .save { color: #080808; background: var(--primary); border: 0; }
+    .sm-footer .save:disabled { opacity: .3; cursor: not-allowed; }
+    @media(max-width:600px) {
+      .skills-matrix { grid-template-columns: 1fr; }
+      .skill-modal { height: 100dvh; max-height: none; border: 0; border-radius: 0; }
+      .sm-tabs { padding: 0 .5rem; }
+      .sm-tabs small { display: none; }
+      .sm-body { padding: 1.3rem 1rem; }
+      .identity-layout, .level-studio { grid-template-columns: 1fr; }
+      .icon-preview { width: 100px; }
+      .field-grid { grid-template-columns: 1fr; }
+      .level-score { border-right: 0; border-bottom: 1px solid #1b1b1b; padding-bottom: 1rem; }
+    }
   `]
 })
 export class AdminSkillsComponent implements OnInit {
@@ -149,6 +240,7 @@ export class AdminSkillsComponent implements OnInit {
   formSkill: Skill = this.resetForm();
   api = inject(SkillsApiService);
   toast = inject(ToastService);
+  readonly levelPoints = [1, 2, 3, 4, 5];
 
   ngOnInit() { this.load(); }
   load() { 
@@ -174,6 +266,9 @@ export class AdminSkillsComponent implements OnInit {
   }
   closeModal() { this.showModal.set(false); }
   resetForm(): Skill { return { name: '', category: 'Frontend', icon: '🛠️', level: 3, order: 0 }; }
+  levelLabel(level: number) {
+    return ['Découverte', 'Pratique', 'Autonome', 'Avancé', 'Expertise'][Math.max(0, Math.min(4, level - 1))];
+  }
   
   save() { 
     const obs = this.editingId() ? this.api.update(this.editingId()!, this.formSkill) : this.api.create(this.formSkill); 

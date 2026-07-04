@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AdminAuthService } from '../../services/admin-auth.service';
 import { ToastService } from '../../../core/services/toast.service';
 
@@ -15,11 +15,13 @@ import { ToastService } from '../../../core/services/toast.service';
       
       <div class="login-card glass-card">
         <div class="card-header">
-           <h1>ACCÈS ADMIN</h1>
-           <p>Identifiez-vous pour gérer le portfolio</p>
+           <div class="security-icon" *ngIf="mfaRequired()">◈</div>
+           <h1>{{ mfaRequired() ? 'DOUBLE VÉRIFICATION' : 'ACCÈS ADMIN' }}</h1>
+           <p>{{ mfaRequired() ? 'Saisissez le code de votre application Authenticator' : 'Identifiez-vous pour gérer le portfolio' }}</p>
         </div>
 
         <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+          <ng-container *ngIf="!mfaRequired()">
           <div class="form-group">
             <label>Email</label>
             <input 
@@ -47,14 +49,23 @@ import { ToastService } from '../../../core/services/toast.service';
               </button>
             </div>
           </div>
+          </ng-container>
+
+          <div class="form-group mfa-group" *ngIf="mfaRequired()">
+            <label>Code de sécurité</label>
+            <input type="text" name="mfaCode" [(ngModel)]="mfaCode" required minlength="6" maxlength="20"
+              inputmode="numeric" autocomplete="one-time-code" placeholder="000 000" class="cyber-input mfa-input">
+            <small>Un code à 6 chiffres ou un code de récupération.</small>
+          </div>
 
           <div *ngIf="error()" class="error-msg">
             {{ error() }}
           </div>
 
           <button type="submit" [disabled]="loading() || !loginForm.valid" class="btn-primary">
-            {{ loading() ? 'Connexion...' : 'Entrer dans le système' }}
+            {{ loading() ? 'Vérification...' : (mfaRequired() ? 'Vérifier le code' : 'Entrer dans le système') }}
           </button>
+          <button type="button" class="back-login" *ngIf="mfaRequired()" (click)="resetMfa()">← Utiliser un autre compte</button>
         </form>
       </div>
     </div>
@@ -92,6 +103,7 @@ import { ToastService } from '../../../core/services/toast.service';
     }
 
     .card-header { text-align: center; margin-bottom: 2.5rem; }
+    .security-icon { width:48px; height:48px; display:grid; place-items:center; margin:0 auto 1rem; color:#c084fc; background:rgba(192,132,252,.08); border:1px solid rgba(192,132,252,.22); border-radius:14px; font-size:1.4rem; }
     h1 { font-weight: 900; letter-spacing: 2px; font-size: 1.8rem; margin-bottom: 0.5rem; }
     p { color: #94a3b8; font-size: 0.9rem; }
 
@@ -165,25 +177,44 @@ import { ToastService } from '../../../core/services/toast.service';
       margin-bottom: 1.5rem;
       border-left: 3px solid #ef4444;
     }
+    .mfa-input { text-align:center; font:800 1.35rem monospace; letter-spacing:.35rem; }
+    .mfa-group small { display:block; margin-top:.55rem; color:#475569; font-size:.67rem; text-align:center; }
+    .back-login { width:100%; margin-top:1rem; color:#64748b; background:transparent; border:0; cursor:pointer; font-size:.7rem; }
+    .back-login:hover { color:#c084fc; }
   `]
 })
 export class AdminLoginComponent {
   email = '';
   password = '';
+  mfaCode = '';
   showPassword = signal(false);
+  mfaRequired = signal(false);
   loading = signal(false);
   error = signal<string | null>(null);
 
   auth = inject(AdminAuthService);
   router = inject(Router);
+  route = inject(ActivatedRoute);
   toast = inject(ToastService);
+
+  constructor() {
+    if (this.route.snapshot.queryParamMap.get('session') === 'expired') {
+      this.error.set('Votre session a expiré. Veuillez vous reconnecter.');
+    }
+  }
 
   onSubmit() {
     this.loading.set(true);
     this.error.set(null);
 
-    this.auth.login(this.email, this.password).subscribe({
-      next: () => {
+    this.auth.login(this.email, this.password, this.mfaRequired() ? this.mfaCode : undefined).subscribe({
+      next: response => {
+        if ('mfaRequired' in response) {
+          this.mfaRequired.set(true);
+          this.mfaCode = '';
+          this.loading.set(false);
+          return;
+        }
         this.toast.success('Connexion établie. Bienvenue, Administrateur.');
         this.loading.set(false);
         this.router.navigate(['/admin/dashboard']);
@@ -195,5 +226,12 @@ export class AdminLoginComponent {
         this.loading.set(false);
       }
     });
+  }
+
+  resetMfa() {
+    this.mfaRequired.set(false);
+    this.mfaCode = '';
+    this.password = '';
+    this.error.set(null);
   }
 }

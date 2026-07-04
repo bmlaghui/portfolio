@@ -95,6 +95,8 @@ jobs:
           DATABASE_URL=postgresql://ci_user:ci_password_for_compose@db:5432/portfolio_ci?schema=public
           JWT_SECRET=ci_jwt_secret_for_pipeline_only_change_in_real_prod
           JWT_REFRESH_SECRET=ci_refresh_secret_for_pipeline_only
+          MFA_ENCRYPTION_KEY=ci_mfa_encryption_key_for_pipeline_only
+          ANALYTICS_SALT=ci_analytics_hash_salt_for_pipeline_only
           EOF
 
       - name: Validate production compose file

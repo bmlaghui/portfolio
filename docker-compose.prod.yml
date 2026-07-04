@@ -59,6 +59,8 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      MFA_ENCRYPTION_KEY: ${MFA_ENCRYPTION_KEY:-}
+      ANALYTICS_SALT: ${ANALYTICS_SALT:-}
       REDIS_HOST: redis
       REDIS_PORT: 6379
       NODE_ENV: production
@@ -116,4 +118,3 @@ volumes:
 networks:
   portfolio-prod:
     driver: bridge
-

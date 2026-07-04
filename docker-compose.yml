@@ -32,6 +32,8 @@ services:
       DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD:-password}@db:5432/${DB_NAME:-portfolio}?schema=public
       JWT_SECRET: ${JWT_SECRET:-supersecret_jwt_key_change_in_prod}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-supersecret_refresh_key_change_in_prod}
+      MFA_ENCRYPTION_KEY: ${MFA_ENCRYPTION_KEY:-}
+      ANALYTICS_SALT: ${ANALYTICS_SALT:-}
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
@@ -56,4 +58,3 @@ services:
 volumes:
   pgdata:
   redisdata:
-

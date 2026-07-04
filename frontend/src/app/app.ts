@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, NgZone } from '@angular/core';
 import { Router, RouterOutlet, ChildrenOutletContexts, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { pageTransitions } from './animations';
@@ -19,16 +19,21 @@ export class App {
   private contexts = inject(ChildrenOutletContexts);
   private router = inject(Router);
   private analytics = inject(AnalyticsService);
+  private zone = inject(NgZone);
   prepareRoute() {
     const ctx: any = this.contexts.getContext('primary');
     return ctx?.route?.snapshot?.data?.['animation'];
   }
 
   constructor() {
+    this.analytics.bindOutboundTracking();
     this.router.events.pipe(filter(event => event instanceof NavigationEnd)).subscribe(event => {
-      this.analytics.track('page_view', { path: event.urlAfterRedirects });
+      if (!event.urlAfterRedirects.startsWith('/admin')) {
+        this.analytics.track('page_view', { path: event.urlAfterRedirects });
+      }
     });
     if (typeof window !== 'undefined') {
+      this.zone.runOutsideAngular(() => {
       const observer = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver((entries, obs) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
@@ -78,6 +83,7 @@ export class App {
         requestAnimationFrame(loop);
       };
       loop();
+      });
     }
   }
 }

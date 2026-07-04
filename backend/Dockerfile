@@ -22,7 +22,7 @@ COPY --from=build /app/node_modules ./node_modules
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start:dev"]
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:dev"]
 
 # ─── Production stage ─────────────────────────────────────────────────────────
 FROM node:22-alpine AS production

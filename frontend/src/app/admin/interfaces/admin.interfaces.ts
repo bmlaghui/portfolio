@@ -3,12 +3,22 @@ export interface AdminUser {
   email: string;
   name?: string;
   role: string;
+  mfaEnabled?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuthTokens {
   accessToken: string;
   refreshToken: string;
   user: AdminUser;
+}
+
+export type LoginResponse = AuthTokens | { mfaRequired: true };
+
+export interface MfaSetup {
+  secret: string;
+  qrCode: string;
 }
 
 export interface Project {
@@ -121,6 +131,22 @@ export interface DashboardStats {
   skills: number;
   messages: number;
   unreadMessages: number;
+  testimonials: number;
+  subscribers: number;
+  pageViews: number;
+  uniqueVisitors: number;
+  uniqueSessions: number;
+  interactions: number;
+  trafficGrowth: number;
+  publicationRate: number;
+  traffic: {
+    timeline: { date: string; label: string; views: number; interactions: number }[];
+    topPages: { path: string; views: number }[];
+  };
+  contentDistribution: { label: string; value: number; color: string }[];
+  skillCategories: { label: string; value: number }[];
+  publicationStatus: { published: number; drafts: number };
+  recentActivity: { type: 'project' | 'blog' | 'message'; label: string; date: string }[];
   updatedAt: string;
 }
 

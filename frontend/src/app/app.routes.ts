@@ -53,6 +53,10 @@ export const routes: Routes = [
         path: 'profile', 
         loadComponent: () => import('./admin/pages/profile/profile').then(m => m.AdminProfileComponent) 
       },
+      {
+        path: 'account',
+        loadComponent: () => import('./admin/pages/account/account').then(m => m.AdminAccountComponent)
+      },
       { path: 'testimonials', loadComponent: () => import('./admin/pages/testimonials/testimonials').then(m => m.AdminTestimonialsComponent) },
       { path: 'audience', loadComponent: () => import('./admin/pages/audience/audience').then(m => m.AdminAudienceComponent) }
     ]
@@ -60,4 +64,3 @@ export const routes: Routes = [
 
   { path: '**', redirectTo: '' }
 ];
-

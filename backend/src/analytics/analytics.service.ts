@@ -1,13 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { TrackEventDto } from './dto/analytics.dto';
+import * as crypto from 'crypto';
 
 @Injectable()
 export class AnalyticsService {
   constructor(private readonly prisma: PrismaService) {}
 
   track(dto: TrackEventDto) {
-    return this.prisma.analyticsEvent.create({ data: dto });
+    const { visitorId, ...event } = dto;
+    const visitorHash = visitorId
+      ? crypto.createHmac('sha256', process.env.ANALYTICS_SALT || process.env.JWT_SECRET || 'analytics')
+          .update(visitorId)
+          .digest('hex')
+      : undefined;
+    return this.prisma.analyticsEvent.create({
+      data: { ...event, visitorHash },
+      select: { id: true },
+    });
   }
 
   async summary() {

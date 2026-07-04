@@ -17,8 +17,7 @@ export const adminAuthInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
       if (error.status === 401 && !req.url.includes('/auth/login')) {
-        // Auto logout on 401
-        auth.logout();
+        auth.expireSession();
       }
       return throwError(() => error);
     })

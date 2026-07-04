@@ -49,6 +49,9 @@ import { MessagingStateService } from '../services/messaging-state.service';
             <span class="icon">✉️</span> MESSAGES
             <span class="unread-badge" *ngIf="msgState.unreadCount() > 0">{{ msgState.unreadCount() }}</span>
           </a>
+          <a routerLink="/admin/account" routerLinkActive="active" class="nav-item">
+            <span class="icon">🔐</span> MON COMPTE
+          </a>
         </nav>
 
         <div class="sidebar-footer">
@@ -62,9 +65,10 @@ import { MessagingStateService } from '../services/messaging-state.service';
             <button class="hamburger-btn" (click)="isSidebarOpen.set(!isSidebarOpen())">
                <span class="bar"></span><span class="bar"></span><span class="bar"></span>
             </button>
-            <div class="user-info">
+            <a routerLink="/admin/account" class="user-info">
               <span class="welcome">BONJOUR, <strong>{{ auth.currentUser()?.name | uppercase }}</strong></span>
-            </div>
+              <span class="user-shield" [class.secure]="auth.currentUser()?.mfaEnabled">◆</span>
+            </a>
           </div>
           <div class="actions">
             <a href="/" target="_blank" class="view-site">VOIR LE SITE ↗</a>
@@ -123,6 +127,9 @@ import { MessagingStateService } from '../services/messaging-state.service';
     }
     .welcome { font-size: 0.7rem; font-weight: 950; color: #475569; letter-spacing: 1px; }
     .welcome strong { color: #fff; }
+    .user-info { display:flex; align-items:center; gap:.65rem; text-decoration:none; }
+    .user-shield { color:#475569; font-size:.65rem; }
+    .user-shield.secure { color:#4ade80; filter:drop-shadow(0 0 5px rgba(74,222,128,.6)); }
 
     .view-site {
       color: var(--primary); text-decoration: none; font-size: 0.7rem; font-weight: 950;
