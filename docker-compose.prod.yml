@@ -64,6 +64,8 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       NODE_ENV: production
+    volumes:
+      - uploads_prod:/app/uploads
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -114,6 +116,7 @@ services:
 volumes:
   pgdata_prod:
   redisdata_prod:
+  uploads_prod:
 
 networks:
   portfolio-prod:

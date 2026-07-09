@@ -462,6 +462,53 @@ import { TranslationService } from '../../services/translation.service';
     .chip-stack { top: 5%; right: -2%; animation: chip-float 4s ease-in-out infinite; }
     .chip-cloud { bottom: 8%; left: -4%; animation: chip-float 4.7s ease-in-out infinite reverse; }
 
+    :host-context([data-theme="light"]) .grid-overlay {
+      background-image:
+        linear-gradient(rgba(15,23,42,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15,23,42,.045) 1px, transparent 1px);
+    }
+    :host-context([data-theme="light"]) .code-terminal {
+      border-color: rgba(124,58,237,.22);
+      background: rgba(255,255,255,.9);
+      box-shadow:
+        -22px 42px 90px rgba(15,23,42,.18),
+        0 0 55px rgba(192,132,252,.12),
+        inset 0 1px 0 rgba(255,255,255,.8);
+    }
+    :host-context([data-theme="light"]) .code-terminal:hover {
+      box-shadow:
+        -18px 48px 100px rgba(15,23,42,.2),
+        0 0 70px rgba(34,211,238,.15);
+    }
+    :host-context([data-theme="light"]) .terminal-topbar,
+    :host-context([data-theme="light"]) .terminal-tabbar,
+    :host-context([data-theme="light"]) .terminal-footer {
+      border-color: rgba(15,23,42,.1);
+      background: rgba(241,245,249,.72);
+      color: rgba(15,23,42,.48);
+    }
+    :host-context([data-theme="light"]) .terminal-tab {
+      background: rgba(124,58,237,.08);
+      color: rgba(15,23,42,.68);
+    }
+    :host-context([data-theme="light"]) .terminal-body {
+      background:
+        linear-gradient(90deg, rgba(192,132,252,.055), transparent 24%),
+        radial-gradient(circle at 80% 20%, rgba(34,211,238,.08), transparent 36%),
+        rgba(248,250,252,.65);
+    }
+    :host-context([data-theme="light"]) .line-numbers { color: rgba(15,23,42,.26); }
+    :host-context([data-theme="light"]) .ts-code { color: #334155; text-shadow: none; }
+    :host-context([data-theme="light"]) .terminal-tab i,
+    :host-context([data-theme="light"]) .terminal-plus { color: rgba(15,23,42,.34); }
+    :host-context([data-theme="light"]) .floating-chip {
+      border-color: rgba(15,23,42,.12);
+      background: rgba(255,255,255,.88);
+      box-shadow: 0 16px 35px rgba(15,23,42,.16);
+      color: rgba(15,23,42,.58);
+    }
+    :host-context([data-theme="light"]) .mouse-icon { border-color: rgba(15,23,42,.18); }
+
     @keyframes terminal-float {
       0%, 100% { transform: rotateY(-5deg) rotateX(2deg) translateY(0); }
       50% { transform: rotateY(-2deg) rotateX(0) translateY(-12px); }

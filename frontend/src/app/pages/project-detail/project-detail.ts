@@ -272,6 +272,30 @@ import { TranslationService } from '../../services/translation.service';
     .pd-sidebar-link:last-child { border-bottom: none; }
     .pd-sidebar-link:hover { color: var(--accent, var(--primary)); }
 
+    :host-context([data-theme="light"]) .pd-hero-bg-img {
+      opacity: .12;
+    }
+    :host-context([data-theme="light"]) .pd-desc,
+    :host-context([data-theme="light"]) .pd-sidebar-card {
+      background: rgba(255,255,255,.84);
+      box-shadow: 0 18px 45px rgba(15,23,42,.08);
+    }
+    :host-context([data-theme="light"]) .pd-desc code {
+      background: rgba(241,245,249,.9);
+    }
+    :host-context([data-theme="light"]) .pd-desc pre {
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 14px 32px rgba(15,23,42,.08);
+    }
+    :host-context([data-theme="light"]) .carousel-btn {
+      background: rgba(255,255,255,.82);
+      color: var(--text);
+      box-shadow: 0 10px 24px rgba(15,23,42,.14);
+    }
+    :host-context([data-theme="light"]) .dot {
+      background: rgba(15,23,42,.22);
+    }
+
     /* ── Loading ── */
     .pd-loading { padding: 15rem 0; min-height: 70vh; color: var(--text-muted); }
 
@@ -319,4 +343,3 @@ export class ProjectDetailComponent implements OnInit {
   nextSlide() { this.currentSlide.update(s => (s + 1) % this.gallery().length); }
   prevSlide() { this.currentSlide.update(s => (s - 1 + this.gallery().length) % this.gallery().length); }
 }
-

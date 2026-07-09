@@ -41,8 +41,8 @@ import { ToastService } from '../../../core/services/toast.service';
     .uploader-container {
       width: 100%;
       min-height: 180px;
-      background: rgba(0,0,0,0.4);
-      border: 2px dashed rgba(255,255,255,0.1);
+      background: color-mix(in srgb, var(--surface) 82%, transparent);
+      border: 2px dashed var(--glass-border);
       border-radius: 20px;
       position: relative;
       overflow: hidden;
@@ -105,7 +105,7 @@ import { ToastService } from '../../../core/services/toast.service';
       50% { transform: translateY(-10px); }
     }
     .placeholder p {
-      color: #94a3b8;
+      color: var(--text-muted);
       font-size: 1rem;
       margin-bottom: 0.5rem;
     }
@@ -116,7 +116,8 @@ import { ToastService } from '../../../core/services/toast.service';
     }
     .hint {
       font-size: 0.75rem;
-      color: #475569;
+      color: var(--text-muted);
+      opacity: .75;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
@@ -133,7 +134,7 @@ import { ToastService } from '../../../core/services/toast.service';
       color: #000;
     }
     .btn-remove {
-      background: rgba(255,255,255,0.05);
+      background: color-mix(in srgb, var(--surface) 88%, transparent);
       color: #ef4444;
       border: 1px solid rgba(239, 68, 68, 0.2);
     }
@@ -147,7 +148,7 @@ import { ToastService } from '../../../core/services/toast.service';
       left: 0;
       right: 0;
       height: 4px;
-      background: rgba(255,255,255,0.1);
+      background: var(--glass-border);
     }
     .progress-bar {
       height: 100%;

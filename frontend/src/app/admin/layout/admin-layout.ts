@@ -82,15 +82,27 @@ import { MessagingStateService } from '../services/messaging-state.service';
     </div>
   `,
   styles: [`
-    :host { --sidebar-width: 280px; --topbar-height: 80px; --primary: #c084fc; --bg: #050505; }
+    :host {
+      --sidebar-width: 280px;
+      --topbar-height: 80px;
+      --primary: #c084fc;
+      --admin-panel: rgba(8, 9, 18, 0.85);
+      --admin-panel-strong: rgba(5, 5, 5, 0.7);
+      --admin-soft: rgba(255,255,255,.04);
+    }
+    :host-context([data-theme="light"]) {
+      --admin-panel: rgba(255,255,255,.86);
+      --admin-panel-strong: #ffffff;
+      --admin-soft: rgba(15,23,42,.06);
+    }
     
-    .admin-shell { display: flex; min-height: 100vh; background: var(--bg); color: #e2e8f0; font-family: 'Inter', sans-serif; }
+    .admin-shell { display: flex; min-height: 100vh; background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; }
 
     .sidebar {
       width: var(--sidebar-width);
-      background: rgba(8, 9, 18, 0.85);
+      background: var(--admin-panel);
       backdrop-filter: blur(30px) saturate(180%);
-      border-right: 1px solid rgba(255,255,255,0.06);
+      border-right: 1px solid var(--glass-border);
       display: flex;
       flex-direction: column;
       position: fixed;
@@ -100,7 +112,7 @@ import { MessagingStateService } from '../services/messaging-state.service';
     .sidebar::after { content: ""; position: absolute; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); background-size: 100% 4px, 3px 100%; pointer-events: none; z-index: 101; opacity: 0.2; }
 
     .sidebar-header { padding: 3rem 2rem; text-align: center; }
-    .logo-text { font-weight: 950; font-size: 1.6rem; letter-spacing: 6px; color: #fff; text-shadow: 0 0 20px rgba(192, 132, 252, 0.4); }
+    .logo-text { font-weight: 950; font-size: 1.6rem; letter-spacing: 6px; color: var(--text); text-shadow: 0 0 20px rgba(192, 132, 252, 0.25); }
     .dot { color: var(--primary); }
 
     .sidebar-nav { flex: 1; padding: 1rem; display: flex; flex-direction: column; gap: 0.4rem; z-index: 102; }
@@ -108,11 +120,11 @@ import { MessagingStateService } from '../services/messaging-state.service';
       display: flex; align-items: center; padding: 1rem 1.4rem; border-radius: 12px; color: #64748b;
       text-decoration: none; transition: 0.3s; gap: 1.2rem; font-weight: 950; font-size: 0.65rem; letter-spacing: 1.5px;
     }
-    .nav-item:hover { background: rgba(255,255,255,0.02); color: #fff; }
+    .nav-item:hover { background: var(--admin-soft); color: var(--text); }
     .nav-item.active { background: var(--primary); color: #000; box-shadow: 0 0 25px rgba(192, 132, 252, 0.3); }
     .unread-badge { background: #ef4444; color: #fff; font-size: 0.6rem; font-weight: 950; padding: 0.1rem 0.6rem; border-radius: 20px; margin-left: auto; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
 
-    .sidebar-footer { padding: 2rem 1rem; border-top: 1px solid rgba(255,255,255,0.03); z-index: 102; }
+    .sidebar-footer { padding: 2rem 1rem; border-top: 1px solid var(--glass-border); z-index: 102; }
     .btn-logout {
       width: 100%; padding: 1rem; border: 1px solid rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.02);
       color: #ef4444; border-radius: 12px; cursor: pointer; transition: 0.3s; font-weight: 950; font-size: 0.65rem; letter-spacing: 2px;
@@ -121,12 +133,12 @@ import { MessagingStateService } from '../services/messaging-state.service';
 
     .content-area { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; }
     .top-bar {
-      height: var(--topbar-height); background: rgba(5, 5, 5, 0.7); backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center;
+      height: var(--topbar-height); background: var(--admin-panel-strong); backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border); display: flex; align-items: center;
       justify-content: space-between; padding: 0 3rem; position: sticky; top: 0; z-index: 90;
     }
     .welcome { font-size: 0.7rem; font-weight: 950; color: #475569; letter-spacing: 1px; }
-    .welcome strong { color: #fff; }
+    .welcome strong { color: var(--text); }
     .user-info { display:flex; align-items:center; gap:.65rem; text-decoration:none; }
     .user-shield { color:#475569; font-size:.65rem; }
     .user-shield.secure { color:#4ade80; filter:drop-shadow(0 0 5px rgba(74,222,128,.6)); }
@@ -139,9 +151,9 @@ import { MessagingStateService } from '../services/messaging-state.service';
 
     .page-container { padding: 3rem; flex: 1; overflow-x: hidden; }
 
-    .sidebar-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 95; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(10px); }
+    .sidebar-overlay { position: fixed; inset: 0; background: color-mix(in srgb, var(--bg) 75%, transparent); z-index: 95; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(10px); }
     .hamburger-btn { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 10px; }
-    .hamburger-btn .bar { width: 24px; height: 1.5px; background: #fff; border-radius: 2px; transition: 0.3s; }
+    .hamburger-btn .bar { width: 24px; height: 1.5px; background: var(--text); border-radius: 2px; transition: 0.3s; }
 
     @media (max-width: 1024px) {
       .sidebar { transform: translateX(-100%); transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); }

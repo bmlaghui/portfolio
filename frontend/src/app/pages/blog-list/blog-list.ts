@@ -258,6 +258,25 @@ import { SeoService } from '../../core/services/seo.service';
     }
     .pagination button:disabled { opacity: .35; }
 
+    :host-context([data-theme="light"]) .post-card {
+      background: rgba(255,255,255,.84);
+      box-shadow: 0 18px 42px rgba(15,23,42,.08);
+    }
+    :host-context([data-theme="light"]) .post-card:hover {
+      box-shadow: 0 25px 58px rgba(15,23,42,.14);
+    }
+    :host-context([data-theme="light"]) .p-thumb-wrapper {
+      background: rgba(241,245,249,.82);
+    }
+    :host-context([data-theme="light"]) .article-visual {
+      background:
+        radial-gradient(circle at 50% 30%, rgba(192,132,252,0.16), transparent 38%),
+        linear-gradient(145deg, rgba(255,255,255,.96), rgba(226,232,240,.72));
+    }
+    :host-context([data-theme="light"]) .cat-pill {
+      box-shadow: 0 8px 20px rgba(124,58,237,.18);
+    }
+
     @media (max-width: 900px) {
       .journal-grid { grid-template-columns: 1fr; }
       .page-title { font-size: 3.5rem; }

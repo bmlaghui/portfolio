@@ -376,6 +376,30 @@ import { RouterModule } from '@angular/router';
       transform: translateX(3px);
     }
 
+    :host-context([data-theme="light"]) .project-card {
+      background: rgba(255,255,255,.82);
+      box-shadow: 0 18px 45px rgba(15,23,42,.08);
+    }
+    :host-context([data-theme="light"]) .project-card:hover {
+      box-shadow: 0 28px 70px rgba(15,23,42,.16), 0 0 42px rgba(192,132,252,.1);
+    }
+    :host-context([data-theme="light"]) .p-thumb-wrapper {
+      background: rgba(241,245,249,.82);
+    }
+    :host-context([data-theme="light"]) .project-visual {
+      background:
+        radial-gradient(circle at 80% 20%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 38%),
+        linear-gradient(135deg, rgba(255,255,255,.96), rgba(226,232,240,.72));
+    }
+    :host-context([data-theme="light"]) .project-visual strong { opacity: .62; }
+    :host-context([data-theme="light"]) .p-overlay {
+      background: linear-gradient(to bottom, transparent 45%, rgba(255,255,255,.92));
+    }
+    :host-context([data-theme="light"]) .icon-btn,
+    :host-context([data-theme="light"]) .p-cta {
+      background: rgba(255,255,255,.74);
+    }
+
     /* ─── Responsive ─── */
     @media (max-width: 900px) {
       .projects-grid { grid-template-columns: 1fr; }

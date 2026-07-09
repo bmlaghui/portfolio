@@ -413,6 +413,35 @@ interface Stat {
     .proof-stat strong { color: var(--text); font: 800 clamp(2.2rem, 4vw, 4rem)/1 var(--font-title); letter-spacing: -.04em; }
     .proof-stat span { margin-top: .65rem; color: var(--text-muted); font-size: .62rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 
+    :host-context([data-theme="light"]) .about-section {
+      border-block-color: rgba(15,23,42,.08);
+      background: linear-gradient(180deg, transparent, rgba(192,132,252,.035) 45%, transparent);
+    }
+    :host-context([data-theme="light"]) .section-watermark {
+      -webkit-text-stroke-color: rgba(15,23,42,.055);
+    }
+    :host-context([data-theme="light"]) .portrait-card {
+      background: rgba(255,255,255,.86);
+      box-shadow: 0 38px 90px rgba(15,23,42,.16);
+    }
+    :host-context([data-theme="light"]) .portrait-top { color: rgba(15,23,42,.52); }
+    :host-context([data-theme="light"]) .portrait-wrap {
+      background: linear-gradient(145deg, rgba(241,245,249,.95), rgba(226,232,240,.65));
+    }
+    :host-context([data-theme="light"]) .portrait-overlay {
+      background:
+        linear-gradient(to top, rgba(15,23,42,.62), transparent 46%),
+        linear-gradient(135deg, rgba(192,132,252,.12), transparent 42%);
+    }
+    :host-context([data-theme="light"]) .experience-card,
+    :host-context([data-theme="light"]) .signature-card {
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 20px 50px rgba(15,23,42,.15);
+    }
+    :host-context([data-theme="light"]) .principles article:hover {
+      background: rgba(255,255,255,.7);
+    }
+
     @media (max-width: 1100px) {
       .headline-grid { grid-template-columns: 1fr; gap: 2rem; }
       .headline-note { max-width: 620px; }

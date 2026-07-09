@@ -222,6 +222,25 @@ import { BlogService, BlogPost } from '../../services/blog.service';
     }
     .slider-progress button.active { width: 28px; background: var(--primary); }
 
+    :host-context([data-theme="light"]) .post-card {
+      background: rgba(255,255,255,.84);
+      box-shadow: 0 18px 42px rgba(15,23,42,.08);
+    }
+    :host-context([data-theme="light"]) .post-card:hover {
+      box-shadow: 0 24px 58px rgba(15,23,42,.14);
+    }
+    :host-context([data-theme="light"]) .p-thumb-wrapper {
+      background: rgba(241,245,249,.82);
+    }
+    :host-context([data-theme="light"]) .article-visual {
+      background:
+        radial-gradient(circle at 50% 30%, rgba(34,211,238,0.16), transparent 35%),
+        linear-gradient(145deg, rgba(255,255,255,.96), rgba(226,232,240,.72));
+    }
+    :host-context([data-theme="light"]) .cat-pill {
+      box-shadow: 0 8px 20px rgba(124,58,237,.18);
+    }
+
     @media (max-width: 900px) {
       .section-header { flex-direction: column; align-items: flex-start; gap: 2rem; margin-bottom: 3rem; }
       .header-actions { width: 100%; justify-content: space-between; }

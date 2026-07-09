@@ -303,6 +303,51 @@ interface Exp {
     .exp-card:hover .card-accent { background: linear-gradient(90deg, transparent, var(--primary), transparent); }
     .exp-card.current .card-accent { background: linear-gradient(90deg, transparent, var(--primary), rgba(139,92,246,0.3)); }
 
+    :host-context([data-theme="light"]) .tl-dot {
+      background: #fff;
+      border-color: rgba(15,23,42,.18);
+      box-shadow: 0 0 0 4px rgba(124,58,237,.05);
+    }
+    :host-context([data-theme="light"]) .tl-year-tag { color: rgba(15,23,42,.38); }
+    :host-context([data-theme="light"]) .exp-card {
+      background: rgba(255,255,255,.9);
+      border-color: rgba(15,23,42,.1);
+      box-shadow: 0 18px 45px rgba(15,23,42,.08);
+    }
+    :host-context([data-theme="light"]) .card-side .exp-card::after {
+      border-left-color: rgba(15,23,42,.1);
+    }
+    :host-context([data-theme="light"]) .tl-row.flip .card-side .exp-card::after {
+      border-right-color: rgba(15,23,42,.1);
+    }
+    :host-context([data-theme="light"]) .exp-card:hover {
+      box-shadow: 0 22px 58px rgba(15,23,42,.14), 0 0 0 1px rgba(192,132,252,.08);
+    }
+    :host-context([data-theme="light"]) .exp-card.current {
+      background: linear-gradient(135deg, rgba(255,255,255,.96), rgba(248,250,252,.88));
+      border-color: rgba(192,132,252,.22);
+    }
+    :host-context([data-theme="light"]) .logo-box {
+      border-color: rgba(15,23,42,.1);
+      box-shadow: 0 8px 22px rgba(15,23,42,.1);
+    }
+    :host-context([data-theme="light"]) .company-name,
+    :host-context([data-theme="light"]) .position {
+      color: var(--text);
+    }
+    :host-context([data-theme="light"]) .desc,
+    :host-context([data-theme="light"]) .yr {
+      color: var(--text-muted);
+    }
+    :host-context([data-theme="light"]) .period-line {
+      background: linear-gradient(90deg, rgba(15,23,42,.16), transparent);
+    }
+    :host-context([data-theme="light"]) .chip {
+      color: #475569;
+      background: rgba(248,250,252,.9);
+      border-color: rgba(15,23,42,.1);
+    }
+
     /* ── Mobile ── */
     @media (max-width: 860px) {
       .tl-line { left: 24px; transform: none; }

@@ -175,6 +175,43 @@ import { SeoService } from '../../core/services/seo.service';
     .social-links { display: flex; gap: 2rem; }
     .social-links a { color: var(--primary); text-decoration: none; font-weight: 900; transition: color 0.3s; &:hover { color: white; } }
 
+    :host-context([data-theme="light"]) .banner-visual {
+      background:
+        radial-gradient(circle at 50% 35%, rgba(192,132,252,0.16), transparent 32%),
+        linear-gradient(145deg, rgba(255,255,255,.96), rgba(226,232,240,.72));
+    }
+    :host-context([data-theme="light"]) .reading-title {
+      text-shadow: none;
+    }
+    :host-context([data-theme="light"]) .abstract {
+      color: var(--text);
+    }
+    :host-context([data-theme="light"]) ::ng-deep .reading-body pre,
+    :host-context([data-theme="light"]) ::ng-deep .block-code,
+    :host-context([data-theme="light"]) .code-cyber {
+      background: rgba(255,255,255,.86);
+      box-shadow: 0 18px 45px rgba(15,23,42,.08);
+    }
+    :host-context([data-theme="light"]) ::ng-deep .block-code .code-head,
+    :host-context([data-theme="light"]) .code-head {
+      background: rgba(241,245,249,.78);
+    }
+    :host-context([data-theme="light"]) ::ng-deep .block-code code,
+    :host-context([data-theme="light"]) pre {
+      color: #334155;
+    }
+    :host-context([data-theme="light"]) ::ng-deep .block-quote p,
+    :host-context([data-theme="light"]) .quote-card p {
+      color: var(--text);
+    }
+    :host-context([data-theme="light"]) .linkedin-share {
+      color: #0a66c2;
+      background: rgba(10,102,194,.08);
+    }
+    :host-context([data-theme="light"]) .linkedin-share:hover {
+      color: #fff;
+    }
+
     @media (max-width: 900px) {
       .reading-title { font-size: 3.5rem; }
       .abstract { font-size: 1.3rem; margin-bottom: 4rem; }
